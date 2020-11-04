@@ -60,3 +60,7 @@ def value_from_bounds(bounds, log_scale=False):
     else:
         value = np.random.random() * np.ptp(bounds) + bounds[0]
     return value
+
+
+def argmax_list_of_dicts(l, key):
+    return max(enumerate(l), key=lambda x: x[1][key])[0]
