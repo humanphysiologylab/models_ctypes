@@ -1,6 +1,21 @@
+import itertools
+import ctypes
+import os
+import time
+
 import numpy as np
 import pandas as pd
-import itertools
+
+
+def strip_comments(code, comment_char='#'):
+    lines = []
+    for i, line in enumerate(code.split('\n')):
+        items = line.split(comment_char)
+        if len(items) >= 2:
+            line = items[0]
+        lines.append(line)
+    code = '\n'.join(lines)
+    return code
 
 
 def rastrigin(x, A=10):
@@ -19,7 +34,54 @@ def cauchy_inverse_cdf(gamma):
 
 def calculate_RMSE(x, y):
     assert(len(x) == len(y))
+    return np.sqrt(np.mean(((x - y)**2)))
+
+
+def calculate_RMSE_balanced(x, y):
+    assert(len(x) == len(y))
+    x = (x - y.min(axis=0)) / y.ptp(axis=0)
+    y = (y - y.min(axis=0)) / y.ptp(axis=0)
     return np.sqrt(np.sum(((x - y)**2)) / len(x))
+
+
+def autoscaling(signal_to_scale, signal_reference):
+    def scalar_multiplications(a, b):
+        assert (len(a) == len(b))
+        assert (a.size == b.size)
+        coefficients = np.array([np.dot(a, b), np.sum(a), np.sum(b), np.sum(a ** 2), len(a)])
+        return coefficients
+
+    c = scalar_multiplications(signal_to_scale, signal_reference)
+
+    if c[1] == 0 or c[1] * c[1] - c[4] * c[3] == 0:
+        alpha = 0
+        beta = 0
+    else:
+        beta = (c[0] * c[1] - c[2] * c[3]) / (c[1] * c[1] - c[4] * c[3])
+        alpha = (c[2] - beta * c[4]) / c[1]
+
+    signal_scaled = signal_to_scale * alpha + beta
+    rmse = calculate_RMSE(signal_scaled, signal_reference)
+
+    return signal_scaled, rmse, (alpha, beta)
+
+
+def calculate_composite_RMSE_V_CaT(x, y):
+    # x -- model, y -- experiment
+    assert (len(x) == len(y))
+
+    v_model, cat_model = x.T
+    v_exp, cat_exp = y.T
+
+    cat_model = (cat_model - cat_model.min(axis=0)) / cat_model.ptp(axis=0)  # to balance V and CaT
+
+    rmse_v = calculate_RMSE_balanced(v_model, v_exp)    # v_exp --> [0, 1]
+    cat_exp_scaled, rmse_cat, coeffs = autoscaling(signal_to_scale=cat_exp,
+                                                   signal_reference=cat_model)
+
+    rmse_total = rmse_v + rmse_cat
+
+    return rmse_total
 
 
 def update_array_from_kwargs(array, legend, **kwargs):
@@ -42,8 +104,8 @@ def get_value_by_key(array, legend, key):
     return dict(zip(legend['name'], array))[key]
 
 
-def flatten_list(l):
-    return list(itertools.chain(*l))
+def flatten_iterable(x):
+    return list(itertools.chain(*x))
 
 
 def batches_from_list(l, n_batches=1):
@@ -64,3 +126,78 @@ def value_from_bounds(bounds, log_scale=False):
 
 def argmax_list_of_dicts(l, key):
     return max(enumerate(l), key=lambda x: x[1][key])[0]
+
+
+def find_index_first(seq, condition):
+    #  https://stackoverflow.com/a/8534381/13213091
+    return next((i for i, x in enumerate(seq) if condition(x)), None)
+
+
+def create_model_from_so(filename_so):
+
+    #filename_so = '_maleckar/maleckar.so'
+    #dirname_current_abs = os.path.abspath(os.path.dirname(__file__))
+    #filename_so_abs = os.path.join(dirname_current_abs, filename_so)
+    #model = ctypes.CDLL(filename_so_abs)
+    model = ctypes.CDLL(filename_so)
+
+    model.initConsts.argtypes = [
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS'),
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS')
+    ]
+
+    model.initConsts.restype = ctypes.c_void_p
+
+
+    model.run.argtypes = [
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS'),
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS'),
+        ctypes.c_int,
+        ctypes.c_double,
+        ctypes.c_double,
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, flags='C_CONTIGUOUS'),
+    ]
+
+    model.run.restype = ctypes.c_int
+
+
+    model.run_chain.argtypes = [
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS'),
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS'),
+        ctypes.c_int,
+        ctypes.c_double,
+        ctypes.c_double,
+        ctypes.c_int,
+        ctypes.c_double,
+        ctypes.c_double,
+        np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, flags='C_CONTIGUOUS'),
+    ]
+
+    model.run_chain.restype = ctypes.c_int
+
+    return model
+
+
+class Timer:
+
+    def __init__(self):
+        self.times = dict()
+        self.total = None
+
+    def start(self, name):
+        self.times[name] = -time.time()
+
+    def end(self, name):
+        self.times[name] += time.time()
+
+    def report(self, sort=False):
+        total = sum(self.times.values())
+        self.times['total'] = total
+        times = dict(sorted(self.times.items(), key=lambda x: x[1], reverse=True) if sort else self.times)
+        s = "\n".join(f"{name}: {times[name]:.6f} {100 * times[name] / total:.2f}%" for name in times)
+        del self.times['total']
+        return s
+
+    def clear(self):
+        del self.times
+        self.times = dict()

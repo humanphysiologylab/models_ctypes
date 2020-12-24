@@ -1,6 +1,7 @@
 import random
 import copy
 import numpy as np
+from numba import njit
 
 from src.helpers import cauchy_inverse_cdf, uniform_vector
 
@@ -39,6 +40,7 @@ def uniform_crossover(g1, g2):
     return g_new
 
 
+@njit
 def sbx_crossover(parent1, parent2, bounds, cross_rate=0.9):
     # adopted realcross from NSGA-II: Non-dominated Sorting Genetic Algorithm - II
     # Authors: Dr. Kalyanmoy Deb, Sameer Agrawal, Amrit Pratap, T Meyarivan
@@ -105,8 +107,8 @@ def sbx_crossover(parent1, parent2, bounds, cross_rate=0.9):
                 child1[j] = parent1[j]
                 child2[j] = parent2[j]
     else:
-        child1 = copy.deepcopy(parent1)
-        child2 = copy.deepcopy(parent2)
+        child1 = parent1.copy()
+        child2 = parent2.copy()
     return child1, child2
 
 
@@ -136,6 +138,49 @@ def cauchy_mutation(genes, gamma=1, bounds=None):  # do not change gamma=1
     return genes_new
 
 
+def cauchy_mutation_population(population, bounds, gamma, mutation_rate, inplace=False):
+    n_genes = len(population[0]['genes'])
+    assert (n_genes == len(bounds))
+
+    genes = np.concatenate([organism['genes'].flatten() for organism in population])
+
+    p = np.random.random(len(population))
+    shifts = gamma * np.tan(np.pi * (p - 0.5))
+
+    mut_mask = np.random.random(len(population)) <= mutation_rate
+    shifts = shifts * mut_mask
+
+    shifts = np.tile(shifts, (n_genes, 1)).T.flatten()
+
+    u = np.random.randn(n_genes * len(population)).reshape((n_genes, len(population)))
+    u = u / np.linalg.norm(u, axis=1)[:, None]
+    u = u.flatten()
+
+    shifts = shifts * u
+    lb, ub = np.tile(bounds, (len(population), 1)).T
+
+    assert (np.all(lb <= genes) and np.all(genes <= ub)), "genes are outside bounds"
+
+    ptp = ub - lb
+    b = ub - genes
+
+    shifts = np.remainder(shifts, 2 * ptp)
+    shifts = np.abs(np.abs(shifts - b) - ptp) - (ptp - b)
+
+    genes = genes + shifts
+    genes = np.reshape(genes, (len(population), n_genes))
+
+    if inplace:
+        mutants = population
+    else:
+        mutants = copy.deepcopy(population)
+
+    for i in range(len(mutants)):
+        mutants[i]['genes'] = genes[i]
+
+    return mutants
+
+
 def selection(population):
     return tournament_selection(population)
 
@@ -148,29 +193,39 @@ def mutation(genes, bounds):
     return cauchy_mutation(genes, bounds=bounds)
 
 
-def do_step(population, new_size, elite_size, bounds):
+def do_step(population, new_size, elite_size, bounds, **kw):
+
+    crossover_rate = kw.get('crossover_rate', 1)
+    mutation_rate = kw.get('mutation_rate', 1)
+    gamma = kw.get('gamma', 1)
 
     if new_size is None:
         new_size = len(population)
     new_population = []
 
-    if elite_size > 0:
-        new_population += sorted(population, key=lambda organism: organism['fitness'], reverse=True)[:elite_size]
-
-    while len(new_population) < new_size:
+    while len(new_population) < new_size - elite_size:
         parent1, parent2 = population[0], population[0]
         while parent1 is parent2:
             parent1 = selection(population)
             parent2 = selection(population)
 
-        offspring_genes = sbx_crossover(parent1['genes'], parent2['genes'], bounds=bounds)
-        #  offspring_genes = [uniform_crossover(parent1['genes'], parent2['genes'])]
-        for genes in offspring_genes:  # TODO: rewrite for different crossover types
-            child = dict(genes=genes)
-            child['genes'] = mutation(child['genes'], bounds=bounds)
-            child['state'] = copy.deepcopy(parent1['state'])
-            new_population.append(copy.deepcopy(child))
+        if np.random.random() <= crossover_rate:
+            offspring_genes = sbx_crossover(parent1['genes'], parent2['genes'], bounds=bounds)
+            #  offspring_genes = [uniform_crossover(parent1['genes'], parent2['genes'])]
+            for genes in offspring_genes:  # TODO: rewrite for different crossover types
+                child = dict(genes=genes)
+                child['state'] = parent1['state']
+                new_population.append(copy.deepcopy(child))
+        else:  # no crossover
+            child1 = copy.deepcopy(parent1)
+            child2 = copy.deepcopy(parent2)
+            new_population += [child1, child2]
 
-    new_population = new_population[:new_size]  # TODO: sbx_crossover safe processing
+    new_population = new_population[:new_size - elite_size]  # TODO: sbx_crossover safe processing
+
+    new_population = cauchy_mutation_population(new_population, bounds=bounds, gamma=gamma,
+                                                mutation_rate=mutation_rate, inplace=True)
+
+    new_population += sorted(population, key=lambda organism: organism['fitness'], reverse=True)[:elite_size]
 
     return new_population
