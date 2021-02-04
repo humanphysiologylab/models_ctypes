@@ -6,6 +6,11 @@ import time
 import numpy as np
 import pandas as pd
 
+from sklearn.metrics import mean_squared_error as MSE
+
+def RMSE(x, y):
+    return MSE(x, y, squared=False)
+
 
 def strip_comments(code, comment_char='#'):
     lines = []
@@ -82,6 +87,23 @@ def calculate_composite_RMSE_V_CaT(x, y):
     rmse_total = rmse_v + rmse_cat
 
     return rmse_total
+
+
+# # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # #
+def ma(x, N):
+    return np.convolve(x, np.ones(N)/N, mode='valid')
+
+def calculate_mean_abs_noise(array, N=31):
+    array_ma = np.apply_along_axis(func1d=ma, axis=0, arr=array, N=N)
+    array_valid = array[N//2: N//2 + len(array_ma)]
+    noise = np.mean(np.abs(array_valid - array_ma), axis=0)
+    return noise
+
+def calculate_RMSE_weightened(x, y, weights):
+    return np.sum(MSE(x, y, squared=False, multioutput='raw_values') * weights)
+# # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # #
 
 
 def update_array_from_kwargs(array, legend, **kwargs):
