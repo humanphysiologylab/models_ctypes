@@ -7,12 +7,15 @@ import pandas as pd
 from tqdm.auto import tqdm
 
 
-def collect_results(case, dirname_results, load_dump=False):
+def collect_results(case, dirname_results, load_dump=False, voigt=False):
 
     idx = pd.IndexSlice
 
-    group, cell, suffix = case.split('/')
-    group, cell = int(group[-1]), int(cell[-1])
+    if voigt:
+        group, cell, suffix = case.split('/')
+        group, cell = int(group[-1]), int(cell[-1])
+    else:
+        group, cell, suffix = None, None, case
 
     config_path = os.path.join(dirname_results, case)
     with open(os.path.join(config_path, "config_backup.pickle"), 'rb') as f:
