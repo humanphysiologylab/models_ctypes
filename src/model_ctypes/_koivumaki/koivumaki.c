@@ -111,7 +111,7 @@
 //  ALGEBRAIC[106]	is	I_If
 
 
-void initialize_states_default(double *STATES) {
+void initialize_states_default(double *STATES, const double *CONSTANTS) {
     STATES[0]	=	0.6189225;	//  CaSR1
     STATES[1]	=	0.6076289;	//  CaSR2
     STATES[2]	=	0.5905266;	//  CaSR3
@@ -155,6 +155,21 @@ void initialize_states_default(double *STATES) {
     STATES[40]	=	4.25044500000000026e-03;	//  serca_ass
     STATES[41]	=	9.28686;	//  Nai
     STATES[42]	=	8.691504;	//  Nass
+
+    // Fluo-3
+    const double fluo_tot = CONSTANTS[89];
+    const double k_on = CONSTANTS[90], k_off = CONSTANTS[91];
+
+    for (int i = 0; i < 5; ++i) {
+
+      int i_fluo = 43 + i;
+      int i_Cai  = 4 + i;
+
+      double Cai  = STATES[i_Cai];
+
+      STATES[i_fluo] = Cai * fluo_tot / (k_off / k_on + Cai);
+
+    }
 }
 
 
@@ -507,6 +522,27 @@ void calc_stimulus(const double time, double *STATES, double *CONSTANTS, double 
 }
 
 
+void calc_fluo_3(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
+{
+    const double fluo_tot = CONSTANTS[89];
+    const double k_on = CONSTANTS[90], k_off = CONSTANTS[91];
+
+    for (int i = 0; i < 5; ++i) {
+
+        int i_fluo = 43 + i;
+        int i_Cai  = 4 + i;
+
+        double fluo = STATES[i_fluo];
+        double Cai  = STATES[i_Cai];
+
+        RATES[i_fluo] = k_on * Cai * (fluo_tot - fluo) - k_off * fluo;
+        RATES[i_Cai] -= RATES[i_fluo];
+
+    }
+
+}
+
+
 void compute_rates_algebraic(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
 
     calc_ical(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
@@ -530,5 +566,6 @@ void compute_rates_algebraic(const double time, double *STATES, double *CONSTANT
     calc_membrane(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_potassium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_sodium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_fluo_3(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
 }
