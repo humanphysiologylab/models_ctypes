@@ -2,114 +2,6 @@
 #include "math.h"
 #include "stdio.h"
 
-//  ALGEBRAIC[0]	is	I_calcium_CaSR4_beta
-//  ALGEBRAIC[1]	is	I_calcium_Cai3_gamma
-//  ALGEBRAIC[2]	is	I_calcium_Cass_i_tot
-//  ALGEBRAIC[3]	is	I_calcium_CaSR1_beta
-//  ALGEBRAIC[4]	is	I_calcium_Cai2_gamma
-//  ALGEBRAIC[5]	is	I_calcium_CaSR3_beta
-//  ALGEBRAIC[6]	is	I_calcium_Cai1_gamma
-//  ALGEBRAIC[7]	is	I_calcium_CaSR2_beta
-//  ALGEBRAIC[8]	is	I_calcium_Cai4_gamma
-//  ALGEBRAIC[9]	is	I_calcium_Cai2_beta
-//  ALGEBRAIC[10]	is	I_calcium_Cai3_beta
-//  ALGEBRAIC[11]	is	I_calcium_Cai1_beta
-//  ALGEBRAIC[12]	is	I_calcium_Cai4_beta
-//  ALGEBRAIC[13]	is	I_calcium_Cass_beta
-//  ALGEBRAIC[14]	is	I_J_bulkSERCAss
-//  ALGEBRAIC[15]	is	I_J_bulkSERCA2
-//  ALGEBRAIC[16]	is	I_J_bulkSERCA3
-//  ALGEBRAIC[17]	is	I_J_bulkSERCA1
-//  ALGEBRAIC[18]	is	I_ical_fca_inf
-//  ALGEBRAIC[19]	is	I_J_SERCASRss
-//  ALGEBRAIC[20]	is	I_ical_f2_tau
-//  ALGEBRAIC[21]	is	I_JSRCaleakss
-//  ALGEBRAIC[22]	is	I_ical_f1_tau
-//  ALGEBRAIC[23]	is	I_JSRCaleak2
-//  ALGEBRAIC[24]	is	I_JSRCaleak1
-//  ALGEBRAIC[25]	is	I_ikur_r_inf
-//  ALGEBRAIC[26]	is	I_ina_h1_tau
-//  ALGEBRAIC[27]	is	I_ikur_s_inf
-//  ALGEBRAIC[28]	is	I_ikur_r_tau
-//  ALGEBRAIC[29]	is	I_ical_d_tau
-//  ALGEBRAIC[30]	is	I_J_SERCASR1
-//  ALGEBRAIC[31]	is	I_ikur_s_tau
-//  ALGEBRAIC[32]	is	I_ikr_pa_inf
-//  ALGEBRAIC[33]	is	I_J_SERCASR2
-//  ALGEBRAIC[34]	is	I_J_SERCASR3
-//  ALGEBRAIC[35]	is	I_ikr_pa_tau
-//  ALGEBRAIC[36]	is	I_JSRCaleak3
-//  ALGEBRAIC[37]	is	I_ical_d_inf
-//  ALGEBRAIC[38]	is	I_ina_h2_tau
-//  ALGEBRAIC[39]	is	I_iks_n_tau
-//  ALGEBRAIC[40]	is	I_ina_m_tau
-//  ALGEBRAIC[41]	is	I_iks_n_inf
-//  ALGEBRAIC[42]	is	I_ina_m_inf
-//  ALGEBRAIC[43]	is	I_if_y_tau
-//  ALGEBRAIC[44]	is	I_it_s_inf
-//  ALGEBRAIC[45]	is	I_if_y_inf
-//  ALGEBRAIC[46]	is	I_it_r_inf
-//  ALGEBRAIC[47]	is	I_betaNass
-//  ALGEBRAIC[48]	is	I_it_r_tau
-//  ALGEBRAIC[49]	is	I_it_s_tau
-//  ALGEBRAIC[50]	is	I_JSRCa3
-//  ALGEBRAIC[51]	is	I_oinfss
-//  ALGEBRAIC[52]	is	I_ikr_pi
-//  ALGEBRAIC[53]	is	I_JSRCa4
-//  ALGEBRAIC[54]	is	I_JSRCa1
-//  ALGEBRAIC[55]	is	I_Nass15
-//  ALGEBRAIC[56]	is	I_i_stim
-//  ALGEBRAIC[57]	is	I_cinfss
-//  ALGEBRAIC[58]	is	I_Jrelss
-//  ALGEBRAIC[59]	is	I_JSRCa2
-//  ALGEBRAIC[60]	is	I_ainfss
-//  ALGEBRAIC[61]	is	I_SRCass
-//  ALGEBRAIC[62]	is	I_INaCa
-//  ALGEBRAIC[63]	is	I_JCass
-//  ALGEBRAIC[64]	is	I_Jrel2
-//  ALGEBRAIC[65]	is	I_Jrel3
-//  ALGEBRAIC[66]	is	I_Jrel1
-//  ALGEBRAIC[67]	is	I_ainf3
-//  ALGEBRAIC[68]	is	I_oinf3
-//  ALGEBRAIC[69]	is	I_ainf2
-//  ALGEBRAIC[70]	is	I_cinf3
-//  ALGEBRAIC[71]	is	I_i_tot
-//  ALGEBRAIC[72]	is	I_SRCa1
-//  ALGEBRAIC[73]	is	I_i_ion
-//  ALGEBRAIC[74]	is	I_ainf1
-//  ALGEBRAIC[75]	is	I_cinf2
-//  ALGEBRAIC[76]	is	I_h_inf
-//  ALGEBRAIC[77]	is	I_SRCa3
-//  ALGEBRAIC[78]	is	I_oinf2
-//  ALGEBRAIC[79]	is	I_oinf1
-//  ALGEBRAIC[80]	is	I_f_inf
-//  ALGEBRAIC[81]	is	I_cinf1
-//  ALGEBRAIC[82]	is	I_Jj_nj
-//  ALGEBRAIC[83]	is	I_SRCa2
-//  ALGEBRAIC[84]	is	I_ICaL
-//  ALGEBRAIC[85]	is	I_JCa4
-//  ALGEBRAIC[86]	is	I_ICab
-//  ALGEBRAIC[87]	is	I_IKur
-//  ALGEBRAIC[88]	is	I_INaK
-//  ALGEBRAIC[89]	is	I_JCa2
-//  ALGEBRAIC[90]	is	I_IfNa
-//  ALGEBRAIC[91]	is	I_JCa3
-//  ALGEBRAIC[92]	is	I_INab
-//  ALGEBRAIC[93]	is	I_i_ss
-//  ALGEBRAIC[94]	is	I_JCa1
-//  ALGEBRAIC[95]	is	I_ICaP
-//  ALGEBRAIC[96]	is	I_JNa
-//  ALGEBRAIC[97]	is	I_ENa
-//  ALGEBRAIC[98]	is	I_ECa
-//  ALGEBRAIC[99]	is	I_INa
-//  ALGEBRAIC[100]	is	I_IKs
-//  ALGEBRAIC[101]	is	I_IKr
-//  ALGEBRAIC[102]	is	I_IfK
-//  ALGEBRAIC[103]	is	I_IK1
-//  ALGEBRAIC[104]	is	I_It
-//  ALGEBRAIC[105]	is	I_EK
-//  ALGEBRAIC[106]	is	I_If
-
 
 void initialize_states_default(double *STATES, const double *CONSTANTS) {
     STATES[0]	=	0.6189225;	//  CaSR1
@@ -259,7 +151,7 @@ void initialize_constants_default(double *CONSTANTS) {
 
     CONSTANTS[82]   =   1.0;    //  STIM_LEVEL
     CONSTANTS[83]   =   0.001;  //  STIM_DURATION
-    CONSTANTS[84]   =   0.0;    //  0.01 STIM_OFFSET
+    CONSTANTS[84]   =   0.0;    //  STIM_OFFSET
     CONSTANTS[85]   =   1.0;    //  STIM_PERIOD
 
     CONSTANTS[86]   =   1.0;    //  Jrel_multiplier
@@ -522,7 +414,7 @@ void calc_stimulus(const double time, double *STATES, double *CONSTANTS, double 
 }
 
 
-void calc_fluo_3(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
+void calc_fluo(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
     const double fluo_tot = CONSTANTS[89];
     const double k_on = CONSTANTS[90], k_off = CONSTANTS[91];
@@ -566,6 +458,6 @@ void compute_rates_algebraic(const double time, double *STATES, double *CONSTANT
     calc_membrane(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_potassium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_sodium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
-    calc_fluo_3(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_fluo(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
 }
