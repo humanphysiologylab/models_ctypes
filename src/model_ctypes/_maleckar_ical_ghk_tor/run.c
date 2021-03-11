@@ -165,7 +165,7 @@ int run_chain(double *S, double *C,
               int chain_length, double v_threshold, double t_safe,
               int n_beats, double t_sampling,
               double tol,
-              double *output) {
+              double *output, double *output_V, int index_target) {
 
     /* CHAIN */
     double S_chain[chain_length * S_SIZE];
@@ -201,7 +201,9 @@ int run_chain(double *S, double *C,
 
 
     /* SINGLE CELL */
-    int    index_target = chain_length / 2;
+    if (index_target == -1) {
+        index_target = chain_length / 2;
+    }
     double *data        = data_chain + 1 + index_target * (C_SIZE + A_SIZE);
     S                   = S_chain + index_target * S_SIZE; // TODO
 
@@ -232,6 +234,9 @@ int run_chain(double *S, double *C,
     int     ctx_state       = 0;
 
     memcpy(output, S, S_SIZE * sizeof(double));
+    for (int i = 0; i < chain_length; ++i) {
+        output_V[i] = S_chain[i * S_SIZE];
+    }
 
     if (FLAG_PRINT) {
         for (int i = 0; i < chain_length; ++i) {
@@ -275,6 +280,9 @@ int run_chain(double *S, double *C,
             }
 
 	        memcpy(output + i_out_global * S_SIZE, S, S_SIZE * sizeof(double));
+            for (int i = 0; i < chain_length; ++i) {
+                output_V[i + i_out_global * chain_length] = S_chain[i * S_SIZE];
+            }
 
             if (FLAG_PRINT) {
                 for (int i = 0; i < chain_length; ++i) {

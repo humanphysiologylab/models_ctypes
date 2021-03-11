@@ -3,6 +3,45 @@
 #include "stdio.h"
 
 
+void _calc_means(double *STATES, const double *CONSTANTS)
+{
+    double CaSR = 0, VSR_sum = 0;
+    double Cai = 0, V_sum = 0;
+    double fluo = 0;
+
+    for (int i = 0; i < 4; ++i) {
+
+        double VSRi = CONSTANTS[13 + i];
+        double CaSRi = STATES[0 + i];
+        CaSR += CaSRi * VSRi;
+        VSR_sum += VSRi;
+
+        double Vnonjuncti = CONSTANTS[7 + i];
+        double Caii = STATES[4 + i];
+        double fluo_i = STATES[43 + i];
+        Cai += Caii * Vnonjuncti;
+        fluo += fluo_i * Vnonjuncti;
+        V_sum += Vnonjuncti;
+
+    }
+
+    double Cass = STATES[8];
+    double fluo_ss = STATES[47];
+    double Vss = CONSTANTS[1];
+    Cai += Cass * Vss;
+    fluo += fluo_ss * Vss;
+    V_sum += Vss;
+
+    CaSR /= VSR_sum;
+    Cai /= V_sum;
+    fluo /= V_sum;
+
+    STATES[48] = CaSR;
+    STATES[49] = Cai;
+    STATES[50] = fluo;
+}
+
+
 void initialize_states_default(double *STATES, const double *CONSTANTS) {
     STATES[0]	=	0.6189225;	//  CaSR1
     STATES[1]	=	0.6076289;	//  CaSR2
@@ -62,6 +101,9 @@ void initialize_states_default(double *STATES, const double *CONSTANTS) {
       STATES[i_fluo] = Cai * fluo_tot / (k_off / k_on + Cai);
 
     }
+
+    _calc_means(STATES, CONSTANTS);
+
 }
 
 
@@ -157,6 +199,10 @@ void initialize_constants_default(double *CONSTANTS) {
     CONSTANTS[86]   =   1.0;    //  Jrel_multiplier
     CONSTANTS[87]   =   1.0;    //  J_SERCASR_multiplier
     CONSTANTS[88]   =   1.0;    //  J_bulkSERCA_multiplier
+
+    CONSTANTS[89]   =   0.0;    //  fluo_tot
+    CONSTANTS[90]   =   236000; //  fluo_k_on
+    CONSTANTS[91]   =   175;    //  fluo_k_off
 }
 
 
@@ -435,6 +481,14 @@ void calc_fluo(const double time, double *STATES, double *CONSTANTS, double *ALG
 }
 
 
+void calc_means(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
+{
+    RATES[48] = 0;
+    RATES[49] = 0;
+    RATES[50] = 0;
+}
+
+
 void compute_rates_algebraic(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
 
     calc_ical(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
@@ -459,5 +513,6 @@ void compute_rates_algebraic(const double time, double *STATES, double *CONSTANT
     calc_potassium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_sodium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_fluo(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_means(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
 }

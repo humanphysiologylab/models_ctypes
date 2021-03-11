@@ -88,6 +88,6 @@ STIM_PERIOD,1
 Jrel_multiplier,1
 J_SERCASR_multiplier,1
 J_bulkSERCA_multiplier,1
-fluo_tot,0.01
-fluo_k_on,2.36E+05
+fluo_tot,0
+fluo_k_on,236000
 fluo_k_off,175

@@ -2,7 +2,7 @@
 #define _MODEL_H_
 
 #define S_SIZE 41
-#define C_SIZE 136
+#define C_SIZE (136 + 18 /*scalers*/)
 #define A_SIZE 120
 
 void initialize_states_default(double *STATES);

@@ -24,6 +24,7 @@ SRCS =  \
 ../../liblsoda/src/vmnorm.c \
 ../../liblsoda/src/strdup_printf.c \
 ./model.c \
+./init.c \
 ./run.c
 
 OBJS = $(SRCS:%.c=%.o)
