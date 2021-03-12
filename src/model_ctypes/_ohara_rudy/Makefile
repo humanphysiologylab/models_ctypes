@@ -31,9 +31,9 @@ OBJS = $(SRCS:%.c=%.o)
 %.o: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS-add) $(CFLAGS) $(fPIC) -DNDEBUG -c $< -o $@
 
-release debug: ohara_rudy.$(SHLIB_EXT)
+release debug: model.$(SHLIB_EXT)
 
-ohara_rudy.$(SHLIB_EXT): $(OBJS)
+model.$(SHLIB_EXT): $(OBJS)
 	rm -rf $@
 	$(CC) $(LDFLAGS) $(LDFLAGS-add) -shared -o $@ $^
 
