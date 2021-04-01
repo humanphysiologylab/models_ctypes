@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 
 
 def plot_waveforms(phenotype_model, phenotype_control, *,
+                   fig=None, axes=None,
                    color_model='C0', color_control='0.3',
                    ylabels=None, xlabel=None, titles=None, suptitle=None,
                    ylim_list=None, yticks_list=None,
@@ -13,10 +15,13 @@ def plot_waveforms(phenotype_model, phenotype_control, *,
     ncols = len(phenotype_model)
     nrows = len(phenotype_model[0])
 
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols,
-                             figsize=plt.figaspect(nrows * 1.1 / ncols),
-                             sharex='col', sharey='row',
-                             )
+    if fig is None or axes is None:
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols,
+                                 figsize=plt.figaspect(nrows * 1.1 / ncols),
+                                 sharex='col', sharey='row',
+                                 )
+
+    axes = axes.reshape((nrows, ncols))
 
     if inset_row_indices is None:
         inset_row_indices = []
@@ -42,7 +47,12 @@ def plot_waveforms(phenotype_model, phenotype_control, *,
             ax = axes[i_row, i_col]
 
             if i_row in inset_row_indices:
-                ax_inset = ax.inset_axes([0.5, 0.5, 0.4, 0.4])
+                for child in ax.get_children():
+                    if isinstance(child, matplotlib.axes._axes.Axes):
+                        ax_inset = child
+                        break
+                else:
+                    ax_inset = ax.inset_axes([0.5, 0.5, 0.4, 0.4])
                 axes_current = [ax, ax_inset]
             else:
                 axes_current = [ax]
@@ -51,13 +61,13 @@ def plot_waveforms(phenotype_model, phenotype_control, *,
                         {'marker': '.', 'ls': '-', 'lw': 1}]
 
             def plot_fancy(x, ax, **kw):
-                ax.plot(x, color='w', lw=kw['lw']+1)
+                ax.plot(x, color='w', lw=kw['lw']+0.5, zorder=kw.get('zorder', -1))
                 ax.plot(x, **kw)
 
             for ax_, kw in zip(axes_current, kw_lsit):
 
                 kw['color'] = color_control
-                plot_fancy(waveform_control, ax_, **kw)
+                plot_fancy(waveform_control, ax_, **kw, zorder=-1)
 
                 kw['color'] = color_model
                 plot_fancy(waveform_model, ax_, **kw)

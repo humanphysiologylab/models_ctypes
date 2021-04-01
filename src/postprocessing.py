@@ -28,12 +28,19 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
 
     dump_filename = os.path.join(config_path, 'dump.bin')
     dump_last_filename = os.path.join(config_path, 'dump_last.npy')
+    dump_elite_filename = os.path.join(config_path, 'dump_elite.npy')
 
     if os.path.isfile(dump_last_filename):
         dump_last = np.load(dump_last_filename)
         dump_last = dump_last.reshape(-1, n_genes + 1)
     else:
         dump_last = None
+
+    if os.path.isfile(dump_elite_filename):
+        dump_elite = np.fromfile(dump_elite_filename)
+        dump_elite = dump_elite.reshape(-1, n_genes + 1)
+    else:
+        dump_elite = None
 
     if load_dump and os.path.isfile(dump_filename):
         dump = np.fromfile(dump_filename, dtype=np.half)
@@ -79,6 +86,7 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
     output_dict = dict(trio = (group, cell, suffix),
                        genes = genes,
                        dump_last = dump_last,
+                       dump_elite = dump_elite,
                        dump = dump,
                        phenotype_model_last = phenotype_model_last,
                        config = config)
@@ -86,7 +94,7 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
     return output_dict
 
 
-def create_C_S(organism, config, exp_cond_name):
+def create_C_S(organism, config, exp_cond_name, verbose=False):
 
     legend = config['runtime']['legend']
     genes_dict = config['runtime']['genes_dict']
@@ -120,7 +128,8 @@ def create_C_S(organism, config, exp_cond_name):
                         S[g_name] = genes_current[ecn, g_name]
 
     for c_name, c in constants_dict_current.items():
-        print(c_name, c)
+        if verbose:
+            print(c_name, c)
         if c_name in legend['constants'].index:
             C[c_name] = c
         if c_name in legend['states'].index:

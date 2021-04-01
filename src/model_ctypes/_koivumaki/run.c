@@ -80,18 +80,21 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol,
     opt.atol    = atol;
     opt.itask   = 1;
 
+    double atol_mult[] = {/*CaSR1*/ 0.001,    /*CaSR2*/ 0.001,    /*CaSR3*/ 0.001,    /*CaSR4*/ 0.001,    /*Cai1*/ 1e-05,
+                          /*Cai2*/ 1e-05,     /*Cai3*/ 1e-05,     /*Cai4*/ 1e-05,     /*Cass*/ 1e-05,     /*d*/ 1e-06,
+                          /*f1*/ 0.001,       /*f2*/ 0.001,       /*fca*/ 0.001,      /*y*/ 0.0001,       /*pa*/ 1e-06,
+                          /*n*/ 0.001,        /*ikur_r*/ 1e-05,   /*ikur_s*/ 0.001,   /*h1*/ 1e-06,       /*h2*/ 1e-05,
+                          /*m*/ 0.0001,       /*it_r*/ 0.0001,    /*it_s*/ 0.001,     /*V*/ 0.0001,       /*Ki*/ 0.001,
+                          /*ryr_a1*/ 0.001,   /*ryr_a2*/ 0.001,   /*ryr_a3*/ 0.001,   /*ryr_ass*/ 0.001,  /*c1*/ 0.001,
+                          /*c2*/ 0.001,       /*c3*/ 0.001,       /*css*/ 1e-06,      /*o1*/ 1e-06,       /*o2*/ 1e-06,
+                          /*o3*/ 1e-06,       /*oss*/ 1e-06,      /*serca_a1*/ 0.001, /*serca_a2*/ 0.001, /*serca_a3*/ 0.001,
+                          /*serca_ass*/ 0.001, /*Nai*/ 0.001,      /*Nass*/ 0.001,     /*fluo_1*/ 1e-05,   /*fluo_2*/ 1e-05,
+                          /*fluo_3*/ 1e-05,   /*fluo_4*/ 1e-05,   /*fluo_ss*/ 1e-05,  /*CaSR*/ 0.001,     /*Cai*/ 1e-05,
+                          /*fluo*/ 1e-05};
+
     for (int i = 0; i < S_SIZE; ++i) {
         rtol[i] = tol;
-        atol[i] = tol;
-        if ((i >= 4) && (i <= 8)) {
-            atol[i] *= 1e-4;  // Cai1-2-3-4, Cass, Cai, fluo
-        }
-        if ((i >= 43) && (i <= 48)) {
-            atol[i] *= 1e-4;  // fluo1-2-3-4, fluo_ss
-        }
-        if ((i >= 49) && (i <= 50)) {
-            atol[i] *= 1e-4;  // Cai, fluo
-        }
+        atol[i] = atol_mult[i];
     }
 
     double  t               = 0;
@@ -138,6 +141,8 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol,
             data[82] = (i_out_local == 1);
             lsoda(&ctx, S, &t, t_out);
 
+            _calc_means(S, data);
+
             memcpy(output + i_out_global * S_SIZE, S, S_SIZE * sizeof(double));
             //memcpy(output_A + i_out_global * A_SIZE, A, A_SIZE * sizeof(double));
             //memcpy(output_t + i_out_global, &t, 1 * sizeof(double));
@@ -176,7 +181,6 @@ int run_algebraic(double *S, double *C, int n_beats, double t_sampling, double t
 
     double  stim_period = C[85];
     int     n_samples   = stim_period / t_sampling;
-    //  int     n_samples_per_stim   = 0; // ceil((C[84] + C[83]) / t_sampling); // from start till the end of the stimulation
 
     double  atol[S_SIZE], rtol[S_SIZE];
     int     neq = S_SIZE;
@@ -187,12 +191,21 @@ int run_algebraic(double *S, double *C, int n_beats, double t_sampling, double t
     opt.atol    = atol;
     opt.itask   = 1;
 
+    double atol_mult[] = {/*CaSR1*/ 0.001,    /*CaSR2*/ 0.001,    /*CaSR3*/ 0.001,    /*CaSR4*/ 0.001,    /*Cai1*/ 1e-05,
+                          /*Cai2*/ 1e-05,     /*Cai3*/ 1e-05,     /*Cai4*/ 1e-05,     /*Cass*/ 1e-05,     /*d*/ 1e-06,
+                          /*f1*/ 0.001,       /*f2*/ 0.001,       /*fca*/ 0.001,      /*y*/ 0.0001,       /*pa*/ 1e-06,
+                          /*n*/ 0.001,        /*ikur_r*/ 1e-05,   /*ikur_s*/ 0.001,   /*h1*/ 1e-06,       /*h2*/ 1e-05,
+                          /*m*/ 0.0001,       /*it_r*/ 0.0001,    /*it_s*/ 0.001,     /*V*/ 0.0001,       /*Ki*/ 0.001,
+                          /*ryr_a1*/ 0.001,   /*ryr_a2*/ 0.001,   /*ryr_a3*/ 0.001,   /*ryr_ass*/ 0.001,  /*c1*/ 0.001,
+                          /*c2*/ 0.001,       /*c3*/ 0.001,       /*css*/ 1e-06,      /*o1*/ 1e-06,       /*o2*/ 1e-06,
+                          /*o3*/ 1e-06,       /*oss*/ 1e-06,      /*serca_a1*/ 0.001, /*serca_a2*/ 0.001, /*serca_a3*/ 0.001,
+                          /*serca_ass*/ 0.001, /*Nai*/ 0.001,      /*Nass*/ 0.001,     /*fluo_1*/ 1e-05,   /*fluo_2*/ 1e-05,
+                          /*fluo_3*/ 1e-05,   /*fluo_4*/ 1e-05,   /*fluo_ss*/ 1e-05,  /*CaSR*/ 0.001,     /*Cai*/ 1e-05,
+                          /*fluo*/ 1e-05};
+
     for (int i = 0; i < S_SIZE; ++i) {
         rtol[i] = tol;
-        atol[i] = tol;
-        if (((i >= 4) && (i < 9)) || ((i >= 43) && (i < 48))) {
-            atol[i] *= 1e-4;  // Cai1-2-3-4, Cass || fluo_1-2-3-4, ss
-        }
+        atol[i] = atol_mult[i];
     }
 
     double  t               = 0;

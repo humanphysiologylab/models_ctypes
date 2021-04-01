@@ -1,6 +1,7 @@
 #include <math.h>
+#include "model.h"
 
-void initialize_states_default(double *STATES) {
+void initialize_states_default(double *STATES, const double *CONSTANTS) {
     STATES[0] =  7.02128101897185673e-04;
     STATES[1] =  3.94923428392655786e-03;
     STATES[2] =  1.35538532457244482e-01;
@@ -42,6 +43,13 @@ void initialize_states_default(double *STATES) {
     STATES[38] =  5.01323282772066123e-07;
     STATES[39] =  2.01567245823636694e-06;
     STATES[40] =  8.00819151705148946e-01;
+
+    STATES[41] = 0; // fluo_i
+    STATES[42] = 0; // fluo_jn
+    STATES[43] = 0; // fluo_sl
+
+    _calc_means(STATES, CONSTANTS);
+
 }
 
 void initialize_constants_default(double* CONSTANTS) {
@@ -164,7 +172,7 @@ void initialize_constants_default(double* CONSTANTS) {
     CONSTANTS[116] =  (1.00000+ 0.400000*CONSTANTS[34])*CONSTANTS[65];
     CONSTANTS[117] =  11.0000*(1.00000 -  0.250000*CONSTANTS[23]);
     CONSTANTS[118] = (exp(CONSTANTS[53]/67.3000) - 1.00000)/7.00000;
-    CONSTANTS[119] =  CONSTANTS[76]*CONSTANTS[34];
+    CONSTANTS[119] =  CONSTANTS[76]; // *CONSTANTS[34];
     CONSTANTS[120] =  (1.00000 -  0.700000*CONSTANTS[34])*CONSTANTS[83];
     CONSTANTS[121] =  (2.50000 -  1.25000*CONSTANTS[23])*0.000246000;
     CONSTANTS[122] =  ((10.0000+ 20.0000*CONSTANTS[34])+ ( 10.0000*CONSTANTS[23])*(1.00000 - CONSTANTS[34]))*1.00000;
@@ -185,5 +193,9 @@ void initialize_constants_default(double* CONSTANTS) {
     for (int i = 0; i < 18; ++i) { // scalers
         CONSTANTS[136 + i] = 1;
     }
+
+    CONSTANTS[154] = 0; // fluo_tot
+    CONSTANTS[155] = 236; // fluo_k_on
+    CONSTANTS[156] = 0.175; // fluo_k_off
 
 }
