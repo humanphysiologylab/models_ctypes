@@ -453,7 +453,9 @@ void calc_stimulus(const double time, double *STATES, double *CONSTANTS, double 
     // ALGEBRAIC[56] *= CONSTANTS[34];
     // double past = floor(time / CONSTANTS[85]) * CONSTANTS[85];
     // ALGEBRAIC[56]  = ((time - past >= CONSTANTS[84]) && (time - past <= CONSTANTS[84] + CONSTANTS[83])) ? CONSTANTS[82] * CONSTANTS[34] : 0.;
-    ALGEBRAIC[56] = CONSTANTS[82] * CONSTANTS[34];
+
+    // ALGEBRAIC[56] = CONSTANTS[82] * CONSTANTS[34]; // STIM LEVEL * amplitude
+
     // Dirty hack
     // ALGEBRAIC[56]  = ((time - CONSTANTS[85] >= CONSTANTS[84]) && (time - CONSTANTS[85] <= CONSTANTS[84] + CONSTANTS[83])) ? CONSTANTS[82] * CONSTANTS[34] : 0.;
     // printf("Stimulation: %f\n", ALGEBRAIC[56]);

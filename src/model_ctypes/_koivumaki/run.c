@@ -41,132 +41,8 @@ int euler(double *t, double *y, void *data,
 }
 
 
-int run(double *S, double *C, int n_beats, double t_sampling, double tol,
-        double *output/*, double *output_A, double *output_t*/) {
-
-    /* Так как в модели Коивумаки 4 SR компартмента,
-     * я буду мутировать их синхронно.
-     * Для этого есть CaSR (STATES[48]).
-     * Лучше костыля я не придумал.
-     * Но это не будет сильно влиять на финальное решение,
-     * так как оно с большой вероятностью выйдет из
-     * элитного организма, он не мутирует.
-     * На остальных нам всё равно.
-     *
-     * Андрей
-     */
-
-    double CaSR = S[48];
-    _calc_means(S, C);
-    for (int i = 0; i < 4; ++i) {
-        S[i] *= CaSR / S[48]; // CaSRi *= CaSR_desired / CaSR_real;
-    }
-
-    double data[C_SIZE + A_SIZE];
-    for (int i = 0; i < C_SIZE; ++i) {
-        data[i] = C[i];
-    }
-
-    double  stim_period = C[85];
-    int     n_samples   = stim_period / t_sampling;
-    //  int     n_samples_per_stim   = 0; // ceil((C[84] + C[83]) / t_sampling); // from start till the end of the stimulation
-
-    double  atol[S_SIZE], rtol[S_SIZE];
-	int     neq = S_SIZE;
-
-	struct lsoda_opt_t opt = {0};
-    opt.ixpr    = 0;
-    opt.rtol    = rtol;
-    opt.atol    = atol;
-    opt.itask   = 1;
-
-    double atol_mult[] = {/*CaSR1*/ 0.001,    /*CaSR2*/ 0.001,    /*CaSR3*/ 0.001,    /*CaSR4*/ 0.001,    /*Cai1*/ 1e-05,
-                          /*Cai2*/ 1e-05,     /*Cai3*/ 1e-05,     /*Cai4*/ 1e-05,     /*Cass*/ 1e-05,     /*d*/ 1e-06,
-                          /*f1*/ 0.001,       /*f2*/ 0.001,       /*fca*/ 0.001,      /*y*/ 0.0001,       /*pa*/ 1e-06,
-                          /*n*/ 0.001,        /*ikur_r*/ 1e-05,   /*ikur_s*/ 0.001,   /*h1*/ 1e-06,       /*h2*/ 1e-05,
-                          /*m*/ 0.0001,       /*it_r*/ 0.0001,    /*it_s*/ 0.001,     /*V*/ 0.0001,       /*Ki*/ 0.001,
-                          /*ryr_a1*/ 0.001,   /*ryr_a2*/ 0.001,   /*ryr_a3*/ 0.001,   /*ryr_ass*/ 0.001,  /*c1*/ 0.001,
-                          /*c2*/ 0.001,       /*c3*/ 0.001,       /*css*/ 1e-06,      /*o1*/ 1e-06,       /*o2*/ 1e-06,
-                          /*o3*/ 1e-06,       /*oss*/ 1e-06,      /*serca_a1*/ 0.001, /*serca_a2*/ 0.001, /*serca_a3*/ 0.001,
-                          /*serca_ass*/ 0.001, /*Nai*/ 0.001,      /*Nass*/ 0.001,     /*fluo_1*/ 1e-05,   /*fluo_2*/ 1e-05,
-                          /*fluo_3*/ 1e-05,   /*fluo_4*/ 1e-05,   /*fluo_ss*/ 1e-05,  /*CaSR*/ 0.001,     /*Cai*/ 1e-05,
-                          /*fluo*/ 1e-05};
-
-    for (int i = 0; i < S_SIZE; ++i) {
-        rtol[i] = tol;
-        atol[i] = atol_mult[i];
-    }
-
-    double  t               = 0;
-    double  t_out           = 0;
-    int     i_out_global    = 1;
-    int     ctx_state       = 0;
-
-    memcpy(output, S, S_SIZE * sizeof(double));
-
-    /*
-    double *A = data + C_SIZE;
-    double R[S_SIZE];
-    rhs(0, S, R, data);
-    memcpy(output_A, A, A_SIZE * sizeof(double));
-
-    memcpy(output_t, &t, 1 * sizeof(double));
-    */
-
-    for (int i_beat = 0; i_beat < n_beats; ++i_beat) {
-
-        // data[85] = stim_period * i_beat; // Dirt hack
-
-        int i_out_local = 1;
-
-//        for (; i_out_local <= n_samples_per_stim; i_out_local++, i_out_global++) {
-//            t_out = i_out_global * t_sampling;
-//            euler(&t, S, data, 1e-5, t_out);
-//            memcpy(output + i_out_global * S_SIZE, S, S_SIZE * sizeof(double));
-//            printf("E: %f %f\n", t, S[23]);
-//        }
-
-        struct lsoda_context_t ctx = {
-            .function = rhs,
-            .neq = neq,
-            .data = data,
-            .state = 1,
-        };
-        lsoda_prepare(&ctx, &opt);
-
-        for (; i_out_local <= n_samples; i_out_local++, i_out_global++) {
-
-            t_out = i_out_global * t_sampling;
-
-            data[82] = (i_out_local == 1);
-            lsoda(&ctx, S, &t, t_out);
-
-            _calc_means(S, data);
-
-            memcpy(output + i_out_global * S_SIZE, S, S_SIZE * sizeof(double));
-            //memcpy(output_A + i_out_global * A_SIZE, A, A_SIZE * sizeof(double));
-            //memcpy(output_t + i_out_global, &t, 1 * sizeof(double));
-
-            if (ctx.state != 2) {
-                return ctx.state;
-            }
-            // printf("L: %f %f\n", t, S[23]);
-
-	    }
-
-        // printf("beat %d completed\n", i_beat);
-
-        ctx_state = ctx.state;
-        lsoda_free(&ctx);
-
-	}
-
-	return ctx_state;
-}
-
-
-int run_algebraic(double *S, double *C, int n_beats, double t_sampling, double tol,
-                  double *output, double *output_A, double *output_t) {
+int run(double *S, double *C, int n_beats, double t_sampling, double tol, double *output,
+        /* can be None -> */ double *output_A, double *output_t, double *stim_protocol) {
 
     double CaSR = S[48];
     _calc_means(S, C);
@@ -175,6 +51,8 @@ int run_algebraic(double *S, double *C, int n_beats, double t_sampling, double t
     }
 
     double data[C_SIZE + A_SIZE];
+    double *A = data + C_SIZE;
+
     for (int i = 0; i < C_SIZE; ++i) {
         data[i] = C[i];
     }
@@ -215,12 +93,15 @@ int run_algebraic(double *S, double *C, int n_beats, double t_sampling, double t
 
     memcpy(output, S, S_SIZE * sizeof(double));
 
-    double *A = data + C_SIZE;
-    double R[S_SIZE];
-    rhs(0, S, R, data);
-    memcpy(output_A, A, A_SIZE * sizeof(double));
+    if (output_A != 0) {
+        double R[S_SIZE];
+        rhs(0, S, R, data);
+        memcpy(output_A, A, A_SIZE * sizeof(double));
+    }
 
-    memcpy(output_t, &t, 1 * sizeof(double));
+    if (output_t != 0) {
+        memcpy(output_t, &t, 1 * sizeof(double));
+    }
 
     for (int i_beat = 0; i_beat < n_beats; ++i_beat) {
 
@@ -247,14 +128,25 @@ int run_algebraic(double *S, double *C, int n_beats, double t_sampling, double t
 
             t_out = i_out_global * t_sampling;
 
-            data[82] = (i_out_local == 1);
+            if (stim_protocol != 0) {
+                A[56] = -stim_protocol[i_out_local] * C[82]; // * STIM_LEVEL
+            } else { /* old version */
+                C[82] = (i_out_local == 1) ? 1 : C[92];
+                A[56] = C[82] * C[34]; // STIM LEVEL * amplitude
+            }
+
             lsoda(&ctx, S, &t, t_out);
 
             _calc_means(S, data);
 
             memcpy(output + i_out_global * S_SIZE, S, S_SIZE * sizeof(double));
-            memcpy(output_A + i_out_global * A_SIZE, A, A_SIZE * sizeof(double));
-            memcpy(output_t + i_out_global, &t, 1 * sizeof(double));
+
+            if (output_A != 0) {
+                memcpy(output_A + i_out_global * A_SIZE, A, A_SIZE * sizeof(double));
+            }
+            if (output_t != 0) {
+                memcpy(output_t + i_out_global, &t, 1 * sizeof(double));
+            }
 
             if (ctx.state != 2) {
                 return ctx.state;
