@@ -3,7 +3,7 @@
 
 #define S_SIZE 51
 #define C_SIZE 93
-#define A_SIZE 107
+#define A_SIZE 108
 
 void initialize_states_default(double *STATES, const double *CONSTANTS);
 

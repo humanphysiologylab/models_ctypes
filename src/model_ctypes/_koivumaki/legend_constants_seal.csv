@@ -91,4 +91,4 @@ J_bulkSERCA_multiplier,1
 fluo_tot,0.01
 fluo_k_on,236000
 fluo_k_off,175
-G_seal,0
+G_seal,0.1
