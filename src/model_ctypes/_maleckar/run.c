@@ -36,12 +36,18 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol,
     opt.atol    = atol;
     opt.itask   = 1;
 
+    double atol_mult[] = {/*V*/ 0.001,        /*Na_c*/ 0.001,     /*Na_i*/ 0.001,     /*m*/ 0.001,        /*h1*/ 1e-06,
+                          /*h2*/ 1e-05,       /*Ca_d*/ 1e-05,     /*d_L*/ 1e-06,      /*f_L1*/ 0.001,     /*f_L2*/ 0.001,
+                          /*K_c*/ 0.001,      /*K_i*/ 0.001,      /*r*/ 0.0001,       /*s*/ 0.001,        /*a_ur*/ 0.0001,
+                          /*i_ur*/ 0.001,     /*n*/ 0.001,        /*pa*/ 1e-05,       /*Ca_c*/ 0.001,     /*Ca_i*/ 1e-05,
+                          /*O_C*/ 0.001,      /*O_TC*/ 0.001,     /*O_TMgC*/ 0.001,   /*O_TMgMg*/ 0.001,  /*O*/ 0.001,
+                          /*Ca_rel*/ 0.001,   /*Ca_up*/ 0.001,    /*O_Calse*/ 0.001,  /*F1*/ 0.001,       /*F2*/ 0.0001,
+                          /*fluo_d*/ 0.0001,  /*fluo_i*/ 0.0001,  /*Cai_mean*/ 1e-05, /*fluo_mean*/ 0.0001};
+
     for (int i = 0; i < S_SIZE; ++i) {
         rtol[i] = tol;
-        atol[i] = tol;
+        atol[i] = atol_mult[i];
     }
-    atol[6]     *=  1e-5;  // Ca_d
-    atol[19]    *=  1e-4;  // Ca_i
 
     double  stim_period = data[5];
     int     n_samples   = stim_period / t_sampling;
@@ -50,6 +56,8 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol,
     double  t_out           = 0;
     int     i_out_global    = 1;
     int     ctx_state       = 0;
+
+    _calc_means(S, data);
 
     memcpy(output, S, S_SIZE * sizeof(double));
 
@@ -70,6 +78,8 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol,
             data[7] = (i_out_local == 1) ? C[7] : 0; // stim_amplitude
 
             lsoda(&ctx, S, &t, t_out);
+
+            _calc_means(S, data);
 
 	        memcpy(output + i_out_global * S_SIZE, S, S_SIZE * sizeof(double));
 
@@ -132,7 +142,6 @@ int event_chain_switch(double t, double *S_chain, int chain_length,
 
     return (mean_abs_diff < v_threshold) && (t > t_safe);
 }
-
 
 
 int euler(double *t, double *y, void *data,

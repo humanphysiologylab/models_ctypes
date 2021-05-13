@@ -2,6 +2,47 @@
 #include "math.h"
 
 
+void calc_fluo(double VOI, double* CONSTANTS, double* RATES, double* STATES, double* ALGEBRAIC) {
+    const double fluo_tot = CONSTANTS[51];
+    const double k_on = CONSTANTS[52], k_off = CONSTANTS[53];
+
+    int i_fluo_array[] = {30, 31}; // *_d, *_i
+    int i_Ca_array[]   = {6,  19};
+
+    for (int i = 0; i < 2; ++i) {
+
+        int  i_fluo = i_fluo_array[i], i_Cai = i_Ca_array[i];
+
+        double fluo = STATES[i_fluo],    Cai = STATES[i_Cai];
+
+        RATES[i_fluo] = k_on * Cai * (fluo_tot - fluo) - k_off * fluo;
+        RATES[i_Cai] -= RATES[i_fluo];
+    }
+}
+
+
+void _calc_means(double *STATES, const double *CONSTANTS) {
+    double Vol_i = CONSTANTS[29], Vol_d = CONSTANTS[30];
+    double Vsum = Vol_i + Vol_d;
+
+    double Ca_i = STATES[19], Ca_d = STATES[6];
+    double fluo_i = STATES[31], fluo_d = STATES[30];
+
+    double Cai_mean  = (Ca_i   * Vol_i   +   Ca_d   * Vol_d) / Vsum;
+    double fluo_mean = (fluo_i * Vol_i   +   fluo_d * Vol_d) / Vsum;
+
+    STATES[32] = Cai_mean;
+    STATES[33] = fluo_mean;
+
+}
+
+
+void calc_means(double VOI, double* CONSTANTS, double* RATES, double* STATES, double* ALGEBRAIC) {
+    RATES[32] = 0;
+    RATES[33] = 0;
+}
+
+
 void computeRates(double VOI, double* CONSTANTS, double* RATES, double* STATES, double* ALGEBRAIC) {
 ALGEBRAIC[12] =  2000.00*CONSTANTS[32]*((1.00000 - STATES[22]) - STATES[23]) -  666.000*STATES[23];
 RATES[23] = ALGEBRAIC[12];
@@ -108,99 +149,16 @@ RATES[26] = (ALGEBRAIC[67] - ALGEBRAIC[68])/( 2.00000*CONSTANTS[45]*CONSTANTS[2]
 ALGEBRAIC[69] =  480.000*STATES[25]*(1.00000 - STATES[27]) -  400.000*STATES[27];
 RATES[27] = ALGEBRAIC[69];
 RATES[25] = (ALGEBRAIC[68] - ALGEBRAIC[66])/( 2.00000*CONSTANTS[46]*CONSTANTS[2]) -  31.0000*ALGEBRAIC[69];
+
+calc_fluo(VOI, CONSTANTS, RATES, STATES, ALGEBRAIC);
+_calc_means(STATES, CONSTANTS);
+calc_means(VOI, CONSTANTS, RATES, STATES, ALGEBRAIC);
+
 }
 
 
 void
-initConsts(double* CONSTANTS, double *STATES)
-{
-STATES[0] = -74.031982;
-CONSTANTS[0] = 8314;
-CONSTANTS[1] = 306.15;
-CONSTANTS[2] = 96487;
-CONSTANTS[3] = 50;
-CONSTANTS[4] = 0;
-CONSTANTS[5] = 1;
-CONSTANTS[6] = 0.006;
-CONSTANTS[7] = -15;
-CONSTANTS[8] = 0.0018;
-STATES[1] = 130.022096;
-STATES[2] = 8.516766;
-STATES[3] = 0.003289;
-STATES[4] = 0.877202;
-STATES[5] = 0.873881;
-CONSTANTS[9] = 6.75;
-CONSTANTS[10] = 60;
-CONSTANTS[11] = 0.025;
-STATES[6] = 7.1e-5;
-STATES[7] = 0.000014;
-STATES[8] = 0.998597;
-STATES[9] = 0.998586;
-CONSTANTS[12] = 8.25;
-STATES[10] = 5.560224;
-STATES[11] = 129.485991;
-STATES[12] = 0.001089;
-STATES[13] = 0.948597;
-CONSTANTS[13] = 2.25;
-STATES[14] = 0.000367;
-STATES[15] = 0.96729;
-CONSTANTS[14] = 3.1;
-CONSTANTS[15] = 1;
-CONSTANTS[16] = 0.5;
-STATES[16] = 0.004374;
-STATES[17] = 0.000053;
-CONSTANTS[17] = 0.060599;
-CONSTANTS[18] = 0.078681;
-STATES[18] = 1.815768;
-STATES[19] = 6.5e-5;
-CONSTANTS[19] = 1;
-CONSTANTS[20] = 68.55;
-CONSTANTS[21] = 36.4829;
-CONSTANTS[22] = 4;
-CONSTANTS[23] = 0.0002;
-CONSTANTS[24] = 0.0374842;
-CONSTANTS[25] = 0.0003;
-CONSTANTS[26] = 0.45;
-CONSTANTS[27] = 1e-24;
-CONSTANTS[28] = 0;
-CONSTANTS[29] = 0.005884;
-CONSTANTS[30] = 0.00011768;
-CONSTANTS[31] = 0.01;
-STATES[20] = 0.026766;
-STATES[21] = 0.012922;
-STATES[22] = 0.190369;
-STATES[23] = 0.714463;
-STATES[24] = 1.38222;
-CONSTANTS[32] = 2.5;
-CONSTANTS[33] = 0.000800224;
-CONSTANTS[34] = 14.3;
-CONSTANTS[35] = 10;
-CONSTANTS[36] = 24.7;
-CONSTANTS[37] = 130;
-CONSTANTS[38] = 1.8;
-CONSTANTS[39] = 5.4;
-CONSTANTS[40] = 2800;
-CONSTANTS[41] = 0.0003;
-CONSTANTS[42] = 0.5;
-CONSTANTS[43] = 0.4;
-CONSTANTS[44] = 200000;
-STATES[25] = 0.632613;
-STATES[26] = 0.649195;
-CONSTANTS[45] = 0.0003969;
-CONSTANTS[46] = 0.0000441;
-CONSTANTS[47] = 0.815;
-STATES[27] = 0.431547;
-STATES[28] = 0.470055;
-STATES[29] = 0.002814;
-CONSTANTS[48] = 0.01;
-CONSTANTS[49] = 0.0003;
-CONSTANTS[50] = 0.003;
-}
-
-
-void
-computeVariables(double VOI, double* CONSTANTS, double* RATES, double* STATES, double* ALGEBRAIC)
-{
+computeVariables(double VOI, double* CONSTANTS, double* RATES, double* STATES, double* ALGEBRAIC) {
 ALGEBRAIC[12] =  2000.00*CONSTANTS[32]*((1.00000 - STATES[22]) - STATES[23]) -  666.000*STATES[23];
 ALGEBRAIC[18] =  0.00350000*exp((( - STATES[0]*STATES[0])/30.0000)/30.0000)+0.00150000;
 ALGEBRAIC[6] = 1.00000/(1.00000+exp((STATES[0] - 1.00000)/- 11.0000));
@@ -279,4 +237,9 @@ ALGEBRAIC[66] =  CONSTANTS[44]*ALGEBRAIC[65]*(STATES[25] - STATES[19]);
 ALGEBRAIC[68] = ( (STATES[26] - STATES[25])*2.00000*CONSTANTS[46]*CONSTANTS[2])/CONSTANTS[48];
 ALGEBRAIC[69] =  480.000*STATES[25]*(1.00000 - STATES[27]) -  400.000*STATES[27];
 ALGEBRAIC[0] =  0.0500000*STATES[0];
+
+calc_fluo(VOI, CONSTANTS, RATES, STATES, ALGEBRAIC);
+_calc_means(STATES, CONSTANTS);
+calc_means(VOI, CONSTANTS, RATES, STATES, ALGEBRAIC);
+
 }

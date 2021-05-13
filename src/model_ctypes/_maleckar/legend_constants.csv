@@ -50,3 +50,6 @@ r_recov,0.815,Ca_handling_by_the_SR,per_second
 tau_tr,0.01,Ca_handling_by_the_SR,second
 k_rel_i,0.0003,Ca_handling_by_the_SR,millimolar
 k_rel_d,0.003,Ca_handling_by_the_SR,millimolar
+fluo_tot,0.01,,
+fluo_k_on,236000,,
+fluo_k_off,175,,

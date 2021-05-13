@@ -29,3 +29,7 @@ Ca_up,0.649195,Ca_handling_by_the_SR,millimolar
 O_Calse,0.431547,Ca_handling_by_the_SR,dimensionless
 F1,0.470055,Ca_handling_by_the_SR,dimensionless
 F2,0.002814,Ca_handling_by_the_SR,dimensionless
+fluo_d,0,,
+fluo_i,0,,
+Cai_mean,0,,
+fluo_mean,0,,
