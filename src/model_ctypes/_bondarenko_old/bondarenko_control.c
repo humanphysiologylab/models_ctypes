@@ -194,35 +194,22 @@ void initialize_states_default(double *STATES) {
 
 }
 
-void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const double* params)
+void fun(const double time, double* y, double* ydot, const double* params)
 {
-    //y[9]
-    ALGEBRAIC[0] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
-    //y[138]
-    ALGEBRAIC[1] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
-    //y[16]
-    ALGEBRAIC[2] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
-    //y[20]
-    ALGEBRAIC[3] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
-    //y[30]
-    ALGEBRAIC[4] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
-
-
-
-//    y[9] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
-//    y[138] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
-//    y[16] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
-//    y[20] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
-//    y[30] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
+    y[9] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
+    y[138] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
+    y[16] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
+    y[20] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
+    y[30] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
     double CL = params[0];
     int stims_passed = (int)floor(time/CL);
     double r_t = time - stims_passed*CL;
-    ALGEBRAIC[5] = 0.0; //Istim
+    double istim = 0.0;
     if(r_t <= 1.0f)
     {
-        ALGEBRAIC[5] = params[17];
+        istim = 80.0;
     }else{
-        ALGEBRAIC[5] = 0.0;
+        istim = 0.0;
     }
 
   // COMMON a1
@@ -1090,7 +1077,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   double tempa8 = (0.8f * exp(0.08032f * (y[1] - ek + 5.476f)) +
     exp(0.06175f * (y[1] - ek - 594.31f))) / (1.0f + exp(
     -0.5143f * (y[1] - ek + 4.753f)));
-  double gk1 = params[18] * 1.7f * 0.27f * sqrt(cko / 5400.0f);
+  double gk1 = 1.7f * 0.27f * sqrt(cko / 5400.0f);
   double gk1p = 1.7f * 0.27f * sqrt(cko / 5400.0f);
   ik1 = (gk1 * y[133] * tempa7 / (tempa7 + tempa8) + gk1p * (1 - y[
     133]) * tempa7 / (tempa7 + tempa8)) * (y[1] - ek);
@@ -1130,7 +1117,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C y[1]  membrane potential
   //C
   double sum_i = icas + icab + inaca + ipca + ina + inab + iclca +
-    inak + ikto + ik1 + iks + ikur + ikr - ALGEBRAIC[5] + icat + icak;
+    inak + ikto + ik1 + iks + ikur + ikr - istim + icat + icak;
   ydot[1] = -sum_i / cm;
   //C
   //C y[2]  intracellular calcium Cai
@@ -1189,7 +1176,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   //C y[10]   C2  Ca channel variable
   //C
-  ydot[10] = 4.0f * alpha * ALGEBRAIC[0] - beta * y[10] + 2.0f * beta * y[
+  ydot[10] = 4.0f * alpha * y[9] - beta * y[10] + 2.0f * beta * y[
     11] - 3.0f * alpha * y[10] - kicalpka * y[83] * y[10] / (
     kicalmpka + icalcav * y[10]) + (alphap * alphap * kcop / (alpha *
     alpha * kco)) * kicalpp * ppcav * y[109] / (kicalmpp + icalcav *
@@ -1256,7 +1243,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C y[108] C1P Ca channel variable
   //C
   ydot[108] = beta * y[109] - 4.0f * alphap * y[108] + kicalpka * y[
-    83] * ALGEBRAIC[0] / (kicalmpka + icalcav * ALGEBRAIC[0]) - (alphap * alphap *
+    83] * y[9] / (kicalmpka + icalcav * y[9]) - (alphap * alphap *
     alphap * kcop / (alpha * alpha * alpha * kco)) * kicalpp *
     ppcav * y[108] / (kicalmpp + icalcav * y[108]);
   //C
@@ -1338,7 +1325,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   //C y[139]   C2  Ca channel variable
   //C
-  ydot[139] = 4.0f * alpha * ALGEBRAIC[1] - beta * y[139] + 2.0f * beta * y[
+  ydot[139] = 4.0f * alpha * y[138] - beta * y[139] + 2.0f * beta * y[
     140] - 3.0f * alpha * y[139] - kicalpka * y[89] * y[139] / (
     kicalmpka + icalecav * y[139]) + (alphap * alphap * kcop / (
     alpha * alpha * kco)) * kicalpp * pp1ecav * y[148] / (kicalmpp +
@@ -1407,7 +1394,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C y[147] C1P Ca channel variable
   //C
   ydot[147] = beta * y[148] - 4.0f * alphap * y[147] + kicalpka * y[
-    89] * ALGEBRAIC[1] / (kicalmpka + icalecav * ALGEBRAIC[1]) - (alphap *
+    89] * y[138] / (kicalmpka + icalecav * y[138]) - (alphap *
     alphap * alphap * kcop / (alpha * alpha * alpha * kco)) *
     kicalpp * pp1ecav * y[147] / (kicalmpp + icalecav * y[147]);
   //C
@@ -1478,8 +1465,8 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   //C y[16] RyR C1 channel variable
   //C
-  ydot[16] = -kap * temp6 * ALGEBRAIC[2] + kam * y[18] - kryrpka * y[89] * y[
-    16] / (kryrmpka + ryrecav * ALGEBRAIC[2]) + kryrpp * pp1ecav * y[116] / (
+  ydot[16] = -kap * temp6 * y[16] + kam * y[18] - kryrpka * y[89] * y[
+    16] / (kryrmpka + ryrecav * y[16]) + kryrpp * pp1ecav * y[116] / (
     kryrmpp + ryrecav * y[116]);
   //C
   //C y[17] RyR C2 channel variable
@@ -1491,7 +1478,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   //C y[18] RyR O1 channel variable
   //C
-  ydot[18] = kap * temp6 * ALGEBRAIC[2] - kam * y[18] - kbp * temp5 * y[
+  ydot[18] = kap * temp6 * y[16] - kam * y[18] - kbp * temp5 * y[
     18] + kbm * y[19] - kcp * y[18] + kcm * y[17] - kryrpka * y[89] *
     y[18] * f_ryr / (kryrmpka + ryrecav * y[18]) + ((kap * kamp) / (
     kapp * kam)) * f_ryr * kryrpp * pp1ecav * y[118] / (kryrmpp +
@@ -1507,7 +1494,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C y[116] RyR C1P channel variable
   //C
   ydot[116] = -kapp * temp6 * y[116] + kamp * y[118] + kryrpka * y[
-    89] * ALGEBRAIC[2] / (kryrmpka + ryrecav * ALGEBRAIC[2]) - kryrpp * pp1ecav * y[
+    89] * y[16] / (kryrmpka + ryrecav * y[16]) - kryrpp * pp1ecav * y[
     116] / (kryrmpp + ryrecav * y[116]);
   //C
   //C y[117] RyR C2P channel variable
@@ -1573,7 +1560,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   //C y[21] INa CNa2 channel variable
   //C
-  ydot[21] = alp11 * ALGEBRAIC[3] - bet11 * y[21] + bet12 * y[22] - alp12 * y[
+  ydot[21] = alp11 * y[20] - bet11 * y[21] + bet12 * y[22] - alp12 * y[
     21] + alp3 * y[41] - bet3 * y[21] - kinapka * y[83] * y[21] / (
     kinampka + y[21]) + (alp12p / alp12) * kinapp * ppcav * y[121] / (
     kinampp + y[121]);
@@ -1617,7 +1604,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   //C y[42] INa ICNa3 channel variable
   //C
-  ydot[42] = bet11 * y[41] - alp11 * y[42] + bet3 * ALGEBRAIC[3] - alp3 * y[
+  ydot[42] = bet11 * y[41] - alp11 * y[42] + bet3 * y[20] - alp3 * y[
     42] - kinapka * y[83] * y[42] / (kinampka + y[42]) + (alp11p *
     alp12p / (alp11 * alp12)) * kinapp * ppcav * y[128] / (kinampp +
     y[128]);
@@ -1625,7 +1612,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C y[120] INa CNa3p channel variable
   //C
   ydot[120] = bet11 * y[121] - alp11p * y[120] + alp3 * y[128] -
-    bet3 * y[120] + kinapka * y[83] * ALGEBRAIC[3] / (kinampka + ALGEBRAIC[3]) - (
+    bet3 * y[120] + kinapka * y[83] * y[20] / (kinampka + y[20]) - (
     alp11p * alp12p / (alp11 * alp12)) * kinapp * ppcav * y[120] / (
     kinampp + y[120]);
   //C
@@ -1689,7 +1676,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C  y[24]  K  intracellular concentration
   //C
   ydot[24] = -1.0f * (ikto + ik1 + iks + ikur + ikr + icak - 2.0f *
-    inak - ALGEBRAIC[5]) * acap / (vmyo * f);
+    inak - istim) * acap / (vmyo * f);
   //C
   //C  y[25],y[26]  ato and ito gating variables for Ikto
   //C
@@ -1777,8 +1764,8 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   double ali = 0.090821f * exp(0.023391f * (y[1] + 5.0f));
   double bei = 0.006497f * exp(-0.03268f * (y[1] + 5.0f));
   //C
-  ydot[30] = bea0 * y[31] - ala0 * ALGEBRAIC[4];
-  ydot[31] = ala0 * ALGEBRAIC[4] - bea0 * y[31] + kb * y[32] - kf * y[31];
+  ydot[30] = bea0 * y[31] - ala0 * y[30];
+  ydot[31] = ala0 * y[30] - bea0 * y[31] + kb * y[32] - kf * y[31];
   ydot[32] = kf * y[31] - kb * y[32] + bea1 * y[33] - ala1 * y[32];
   ydot[33] = ala1 * y[32] - bea1 * y[33] + bei * y[34] - ali * y[33];
   ydot[34] = ali * y[33] - bei * y[34];
@@ -1894,7 +1881,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   ydot[59] = khydgs * y[57] - kreasgs * y[58] * y[59];
   //C
-  //C   y[60] cAMP from AC56 in caveolae
+  //C   y[60] cAMP from AC56 in ceveolae
   //C
   ydot[60] = kcavac56 * ac56cav * atp / (kmatp + atp);
   //C

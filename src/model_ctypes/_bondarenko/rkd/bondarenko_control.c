@@ -3,226 +3,32 @@
 #include <fenv.h>
 #include "math.h"
 
-
-void initialize_states_default(double *STATES) {
-    //time = 0.0f;
-    STATES[1] = -0.8088310412e+02d;
-    STATES[2] = 0.9279026900e-01d;
-    STATES[3] = 0.1620528775e+04d;
-    STATES[4] = 0.8053999501e+01d;
-    STATES[5] = 0.1222160781e+03d;
-    STATES[6] = 0.1620528775e+04d;
-    STATES[7] = 0.9279026946e-01d;
-    STATES[8] = 0.8851691228e-12d;
-    STATES[9] = 0.9615600724e+00d;
-    STATES[10] = 0.3767463428e-02d;
-    STATES[11] = 0.5535450499e-05d;
-    STATES[12] = 0.3614717015e-08d;
-    STATES[13] = 0.7908511386e-12d;
-    STATES[14] = 0.7153680173e-08d;
-    STATES[15] = 0.6391662360e-08d;
-    STATES[16] = 0.9967529680e+00d;
-    STATES[17] = 0.7087660992e-04d;
-    STATES[18] = 0.6300248702e-05d;
-    STATES[19] = 0.2112480482e-10d;
-    STATES[20] = 0.4628585970e+00d;
-    STATES[21] = 0.1062737990e-01d;
-    STATES[22] = 0.9600858225e-04d;
-    STATES[23] = 0.1376322742e+05d;
-    STATES[24] = 0.1418267743e+06d;
-    STATES[25] = 0.4139033547e-02d;
-    STATES[26] = 0.9999623535e+00d;
-    STATES[27] = 0.3298367341e-03d;
-    STATES[28] = 0.5091689794e-03d;
-    STATES[29] = 0.9980927689e+00d;
-    STATES[30] = 0.9979010383e+00d;
-    STATES[31] = 0.1113258849e-02d;
-    STATES[32] = 0.7192382272e-03d;
-    STATES[33] = 0.2223437325e-03d;
-    STATES[34] = 0.4412087393e-04d;
-    STATES[35] = 0.5091689794e-03d;
-    STATES[36] = 0.9980927689e+00d;
-    STATES[37] = 0.1552405441e-06d;
-    STATES[38] = 0.6461071366e-04d;
-    STATES[39] = 0.3762774987e-05d;
-    STATES[40] = 0.8212756509e-08d;
-    STATES[41] = 0.7151890060e-02d;
-    STATES[42] = 0.3114893963e+00d;
-    STATES[43] = 0.5091689794e-03d;
-    STATES[44] = 0.3779115232e-12d;
-    STATES[45] = 0.1193078173e-02d;
-    STATES[46] = 0.3630488755e-61d;
-    STATES[47] = 0.3490326981e-02d;
-    STATES[48] = 0.5883268221e-02d;
-    STATES[49] = 0.3955088510e-03d;
-    STATES[50] = 0.4450890836e-01d;
-    STATES[51] = 0.3630488755e-61d;
-    STATES[52] = 0.2392020281e-01d;
-    STATES[53] = 0.6409630097e-02d;
-    STATES[54] = 0.2487944176e-02d;
-    STATES[55] = 0.1722672905e-02d;
-    STATES[56] = 0.3630488755e-61d;
-    STATES[57] = 0.3771728607e-03d;
-    STATES[58] = 0.7236469606e-03d;
-    STATES[59] = 0.3474740964e-03d;
-    STATES[60] = 0.1300635182e+06d;
-    STATES[61] = 0.5077713406e+05d;
-    STATES[62] = 0.2353396779e+05d;
-    STATES[63] = 0.2193421483e+04d;
-    STATES[64] = 0.1951294807e-01d;
-    STATES[65] = 0.9059006924e-02d;
-    STATES[66] = 0.1097267542e+05d;
-    STATES[67] = 0.9355062972e+05d;
-    STATES[68] = 0.2873599432e+05d;
-    STATES[69] = 0.6773138136e-90d;
-    STATES[70] = 0.1449457584e-01d;
-    STATES[71] = 0.1340498892e+05d;
-    STATES[72] = 0.2242397227e+00d;
-    STATES[73] = 0.3690967042e+05d;
-    STATES[74] = 0.1340729197e-02d;
-    STATES[75] = 0.4134187505e-02d;
-    STATES[76] = 0.4430125145e+04d;
-    STATES[77] = 0.7006267909e+04d;
-    STATES[78] = 0.1421393882e+05d;
-    STATES[79] = 0.7736146378e+01d;
-    STATES[80] = 0.3812957050e+00d;
-    STATES[81] = 0.5158797692e-01d;
-    STATES[82] = 0.8896934822e+00d;
-    STATES[83] = 0.7537918546e-01d;
-    STATES[84] = 0.8253133062e+00d;
-    STATES[85] = 0.6836347022e+01d;
-    STATES[86] = 0.6205890724e+00d;
-    STATES[87] = 0.1172793205e+00d;
-    STATES[88] = 0.1154255173e+01d;
-    STATES[89] = 0.1320878782e+00d;
-    STATES[90] = 0.1033166329e+01d;
-    STATES[91] = 0.9274466720e+01d;
-    STATES[92] = 0.1086997100e+00d;
-    STATES[93] = 0.1546752825e-01d;
-    STATES[94] = 0.2929517738e+00d;
-    STATES[95] = 0.6863855598e-01d;
-    STATES[96] = 0.2353122184e+00d;
-    STATES[97] = 0.3382412669e+00d;
-    STATES[98] = 0.4724516017e+00d;
-    STATES[99] = 0.4126582483e+00d;
-    STATES[100] = 0.2320312876e-01d;
-    STATES[101] = 0.6026039427e+00d;
-    STATES[102] = 0.6026039427e+00d;
-    STATES[103] = 0.2596146734e+00d;
-    STATES[104] = 0.3675832948e+00d;
-    STATES[105] = 0.3813640007e+00d;
-    STATES[106] = 0.8851705616e-12d;
-    STATES[107] = 0.2605069110e-10d;
-    STATES[108] = 0.3415627435e-01d;
-    STATES[109] = 0.5076951530e-03d;
-    STATES[110] = 0.2829869165e-05d;
-    STATES[111] = 0.7010470517e-08d;
-    STATES[112] = 0.2327573109e-10d;
-    STATES[113] = 0.5549734835e-07d;
-    STATES[114] = 0.4958553899e-07d;
-    STATES[115] = 0.6512671925e-11d;
-    STATES[116] = 0.3169194559e-02d;
-    STATES[117] = 0.6261242517e-06d;
-    STATES[118] = 0.3339118148e-07d;
-    STATES[119] = 0.1866017795e-12d;
-    STATES[120] = 0.1213360465e+00d;
-    STATES[121] = 0.2785949016e-02d;
-    STATES[122] = 0.2516918244e-04d;
-    STATES[123] = 0.4069800161e-07d;
-    STATES[124] = 0.1694073185e-04d;
-    STATES[125] = 0.1028703688e-05d;
-    STATES[126] = 0.6604024237e-08d;
-    STATES[127] = 0.1875148561e-02d;
-    STATES[128] = 0.8166786118e-01d;
-    STATES[129] = 0.3801202195e+00d;
-    STATES[130] = 0.5091689794e-03d;
-    STATES[131] = 0.9980927689e+00d;
-    STATES[132] = 0.9214774521e+00d;
-    STATES[133] = 0.9908502903e+00d;
-    STATES[134] = 0.2087704319e+00d;
-    STATES[135] = 0.8637307739e-03d;
-    STATES[136] = 0.9999881755e+00d;
-    STATES[137] = 0.8187695769e-12d;
-    STATES[138] = 0.8894320487e+00d;
-    STATES[139] = 0.3484859972e-02d;
-    STATES[140] = 0.5120227116e-05d;
-    STATES[141] = 0.3343570256e-08d;
-    STATES[142] = 0.8187721513e-12d;
-    STATES[143] = 0.7315039113e-12d;
-    STATES[144] = 0.6616944790e-08d;
-    STATES[145] = 0.5912117549e-08d;
-    STATES[146] = 0.8046441685e-10d;
-    STATES[147] = 0.1055007176e+00d;
-    STATES[148] = 0.1568150421e-02d;
-    STATES[149] = 0.8740796912e-05d;
-    STATES[150] = 0.2165368505e-07d;
-    STATES[151] = 0.2011610269e-10d;
-    STATES[152] = 0.7189314575e-10d;
-    STATES[153] = 0.1714179939e-06d;
-    STATES[154] = 0.1531578593e-06d;
-    STATES[155] = 0.6077748720e-01d;
-    STATES[156] = 0.5796341475e-38d;
-    STATES[157] = 0.3591463241e-02d;
-    STATES[158] = 0.4069691772e-03d;
-    STATES[159] = 0.4580528431e-03d;
-    STATES[160] = 0.5796341475e-39d;
-    STATES[161] = 0.2305390265e-05d;
-    STATES[162] = 0.2397840156e-06d;
-    STATES[163] = 0.8422801321e+00d;
-    STATES[164] = 0.5090725598e-01d;
-    STATES[165] = 0.1153809439e-02d;
-    STATES[166] = 0.1162267165e-04d;
-    STATES[167] = 0.4390450831e-07d;
-    STATES[168] = 0.6508479153e-06d;
-    STATES[169] = 0.6016286658e-01d;
-    STATES[170] = 0.3636232570e-01d;
-    STATES[171] = 0.8241495995e-02d;
-    STATES[172] = 0.8301908322e-03d;
-    STATES[173] = 0.3136036308e-05d;
-    STATES[174] = 0.4648913681e-04d;
-    STATES[175] = 0.2965524523e-01d;
-    STATES[176] = 0.2144114378e-01d;
-    STATES[177] = 0.8608445698e+00d;
-    STATES[178] = 0.1198169988e+00d;
-    STATES[179] = 0.1334142186e-01d;
-    STATES[180] = 0.2971089895e-03d;
-    STATES[181] = 0.2134627497e-02d;
-    STATES[182] = 0.3565307875e-02d;
-    STATES[183] = 0.1184324373e-01d;
-    STATES[184] = 0.5091689794e-03d;
-    STATES[185] = 0.9980927689e+00d;
-
-}
-
-void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const double* params)
+void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC)
 {
-    //y[9]
-    ALGEBRAIC[0] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
-    //y[138]
-    ALGEBRAIC[1] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
-    //y[16]
-    ALGEBRAIC[2] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
-    //y[20]
-    ALGEBRAIC[3] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
-    //y[30]
-    ALGEBRAIC[4] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
-
-
-
 //    y[9] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
+//y[9] == ALGEBRAIC[0]
 //    y[138] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
+//y[138] == ALGEBRAIC[1]
 //    y[16] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
+//y[16] == ALGEBRAIC[2]
 //    y[20] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
+//y[20] == ALGEBRAIC[3]
 //    y[30] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
+//y[30] == ALGEBRAIC[4]
+    ALGEBRAIC[0] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
+    ALGEBRAIC[1] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
+    ALGEBRAIC[2] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
+    ALGEBRAIC[3] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
+    ALGEBRAIC[4] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
     double CL = params[0];
     int stims_passed = (int)floor(time/CL);
     double r_t = time - stims_passed*CL;
-    ALGEBRAIC[5] = 0.0; //Istim
+    double istim = 0.0;
     if(r_t <= 1.0f)
     {
-        ALGEBRAIC[5] = params[17];
+        istim = 80.0;
     }else{
-        ALGEBRAIC[5] = 0.0;
+        istim = 0.0;
     }
 
   // COMMON a1
@@ -1090,7 +896,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   double tempa8 = (0.8f * exp(0.08032f * (y[1] - ek + 5.476f)) +
     exp(0.06175f * (y[1] - ek - 594.31f))) / (1.0f + exp(
     -0.5143f * (y[1] - ek + 4.753f)));
-  double gk1 = params[18] * 1.7f * 0.27f * sqrt(cko / 5400.0f);
+  double gk1 = 1.7f * 0.27f * sqrt(cko / 5400.0f);
   double gk1p = 1.7f * 0.27f * sqrt(cko / 5400.0f);
   ik1 = (gk1 * y[133] * tempa7 / (tempa7 + tempa8) + gk1p * (1 - y[
     133]) * tempa7 / (tempa7 + tempa8)) * (y[1] - ek);
@@ -1130,7 +936,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C y[1]  membrane potential
   //C
   double sum_i = icas + icab + inaca + ipca + ina + inab + iclca +
-    inak + ikto + ik1 + iks + ikur + ikr - ALGEBRAIC[5] + icat + icak;
+    inak + ikto + ik1 + iks + ikur + ikr - istim + icat + icak;
   ydot[1] = -sum_i / cm;
   //C
   //C y[2]  intracellular calcium Cai
@@ -1689,7 +1495,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C  y[24]  K  intracellular concentration
   //C
   ydot[24] = -1.0f * (ikto + ik1 + iks + ikur + ikr + icak - 2.0f *
-    inak - ALGEBRAIC[5]) * acap / (vmyo * f);
+    inak - istim) * acap / (vmyo * f);
   //C
   //C  y[25],y[26]  ato and ito gating variables for Ikto
   //C
@@ -1894,7 +1700,7 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
   //C
   ydot[59] = khydgs * y[57] - kreasgs * y[58] * y[59];
   //C
-  //C   y[60] cAMP from AC56 in caveolae
+  //C   y[60] cAMP from AC56 in ceveolae
   //C
   ydot[60] = kcavac56 * ac56cav * atp / (kmatp + atp);
   //C
@@ -2234,3 +2040,4 @@ void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const do
 
 
 }
+
