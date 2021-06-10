@@ -203,6 +203,19 @@ def create_model_from_so(filename_so):
     return model
 
 
+def wrapped_ndptr(*args, **kwargs):
+    #  https://stackoverflow.com/a/37664693/13213091
+    base = np.ctypeslib.ndpointer(*args, **kwargs)
+    def from_param(cls, obj):
+        if obj is None:
+            return obj
+        return base.from_param(obj)
+    return type(base.__name__, (base,), {'from_param': classmethod(from_param)})
+
+DoubleArrayType_1D = wrapped_ndptr(dtype=np.float64, ndim=1, flags='C_CONTIGUOUS')
+DoubleArrayType_2D = wrapped_ndptr(dtype=np.float64, ndim=2, flags='C_CONTIGUOUS')
+
+
 class Timer:
 
     def __init__(self):
