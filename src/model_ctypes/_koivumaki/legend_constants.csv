@@ -92,3 +92,4 @@ fluo_tot,0.01
 fluo_k_on,236000
 fluo_k_off,175
 G_seal,0
+gKb,0.01

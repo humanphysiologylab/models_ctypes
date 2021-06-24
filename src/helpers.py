@@ -1,12 +1,12 @@
 import itertools
 import ctypes
-import os
 import time
 
 import numpy as np
 import pandas as pd
 
 from sklearn.metrics import mean_squared_error as MSE
+
 
 def RMSE(x, y):
     return MSE(x, y, squared=False)

@@ -357,7 +357,8 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol, double
 
         while (t < t_end_local) {
 
-            t_out = i_out_local * t_sampling + t_start_local;
+            // t_out = i_out_local * t_sampling + t_start_local;
+            t_out = i_out_global * t_sampling;
 
             double t_protocol = (stim_protocol_t != 0) ? stim_protocol_t[i_protocol] + t_start_local : t_out;
 

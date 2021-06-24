@@ -229,3 +229,48 @@ def do_step(population, new_size, elite_size, bounds, **kw):
     new_population += sorted(population, key=lambda organism: organism['fitness'], reverse=True)[:elite_size]
 
     return new_population
+
+@njit
+def transform_genes_bounds(genes, bounds, gammas, mask_multipliers):
+    assert (len(genes) == len(bounds) == len(gammas) == len(mask_multipliers))
+
+    genes_transformed = np.zeros_like(genes)
+    bounds_transformed = np.zeros_like(bounds)
+
+    scaler_dimensional = 1 / np.sqrt(len(genes))
+    for i in range(len(genes)):
+        lb, ub = bounds[i]
+        gene = genes[i]
+        if mask_multipliers[i]:  # log10 scale
+            bounds_transformed[i, 1] = np.log10(ub / lb) * 1 / (gammas[i] / scaler_dimensional)
+            genes_transformed[i] = np.log10(gene)
+            lb_temp = np.log10(lb)
+            ub_temp = np.log10(ub)
+        else:  # linear scale
+            genes_transformed[i] = gene
+            bounds_transformed[i, 1] = (ub - lb) * 1 / (gammas[i] / scaler_dimensional)
+            lb_temp = lb
+            ub_temp = ub
+        genes_transformed[i] = (genes_transformed[i] - lb_temp) / (ub_temp - lb_temp) * bounds_transformed[i, 1]
+
+    return genes_transformed, bounds_transformed
+
+
+@njit
+def transform_genes_bounds_back(genes_transformed, bounds_transformed, bounds_back, mask_multipliers):
+    assert (len(genes_transformed) == len(bounds_transformed) == len(mask_multipliers))
+
+    genes_back = np.zeros_like(genes_transformed)
+
+    for i in range(len(genes_transformed)):  # log10 scale
+        lb_back, ub_back = bounds_back[i]
+        lb_tran, ub_tran = bounds_transformed[i]
+        gene = genes_transformed[i]
+        if mask_multipliers[i]:
+            genes_back[i] = np.log10(lb_back) + (gene - lb_tran) / (ub_tran - lb_tran) * (
+                        np.log10(ub_back) - np.log10(lb_back))
+            genes_back[i] = np.power(10, genes_back[i])
+        else:  # linear scale
+            genes_back[i] = lb_back + (gene - lb_tran) / (ub_tran - lb_tran) * (ub_back - lb_back)
+
+    return genes_back

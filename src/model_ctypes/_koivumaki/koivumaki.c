@@ -205,6 +205,7 @@ void initialize_constants_default(double *CONSTANTS) {
     CONSTANTS[91]   =   175;    //  fluo_k_off
 
     CONSTANTS[92]   =   0;      //  G_seal
+    CONSTANTS[93]   =   0;      // gKb
 }
 
 
@@ -378,7 +379,7 @@ void calc_nernst(const double time, double *STATES, double *CONSTANTS, double *A
 
 void calc_potassium(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
-    ALGEBRAIC[71] = ALGEBRAIC[104] + ALGEBRAIC[87] + ALGEBRAIC[103] + ALGEBRAIC[101] + ALGEBRAIC[100] - 2.0 * ALGEBRAIC[88] + ALGEBRAIC[102] + ALGEBRAIC[56];
+    ALGEBRAIC[71] = ALGEBRAIC[104] + ALGEBRAIC[87] + ALGEBRAIC[103] + ALGEBRAIC[101] + ALGEBRAIC[100] - 2.0 * ALGEBRAIC[88] + ALGEBRAIC[102] + ALGEBRAIC[56] + ALGEBRAIC[108];
     RATES[24] = (-ALGEBRAIC[71]) / (CONSTANTS[18] * CONSTANTS[29]);
 }
 
@@ -500,6 +501,13 @@ void calc_iseal(const double time, double *STATES, double *CONSTANTS, double *AL
 }
 
 
+void calc_ikb(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
+{
+    /* IKb = gKb * (V - EK) */
+    ALGEBRAIC[108] = CONSTANTS[93] * (STATES[23] - ALGEBRAIC[105]);
+}
+
+
 void compute_rates_algebraic(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
 
     calc_ical(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
@@ -521,6 +529,7 @@ void compute_rates_algebraic(const double time, double *STATES, double *CONSTANT
     calc_it(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
     calc_iseal(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_ikb(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
     calc_calcium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_membrane(time, STATES, CONSTANTS, ALGEBRAIC, RATES);

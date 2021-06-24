@@ -2,8 +2,8 @@
 #define _KOIVUMAKI_H_
 
 #define S_SIZE 51
-#define C_SIZE 93
-#define A_SIZE 108
+#define C_SIZE 94
+#define A_SIZE 109
 
 void initialize_states_default(double *STATES, const double *CONSTANTS);
 

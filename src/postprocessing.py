@@ -61,8 +61,9 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
                             index=m_index_index,
                             columns=m_index_columns)
     if dump_last is None:
-        dump_last = dump.loc[idx[n_epochs - 1, :]]
-        np.save(dump_last_filename, np.roll(dump_last.values, axis=1, shift=-1))
+        if dump is not None:
+            dump_last = dump.loc[idx[n_epochs - 1, :]]
+            np.save(dump_last_filename, np.roll(dump_last.values, axis=1, shift=-1))
     else:
         dump_last = pd.DataFrame(np.roll(dump_last, axis=1, shift=1),
                                  columns=m_index_columns)
