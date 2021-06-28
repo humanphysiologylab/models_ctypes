@@ -64,9 +64,9 @@ def autoscaling(signal_to_scale, signal_reference):
     else:
         beta = (c[0] * c[1] - c[2] * c[3]) / (c[1] * c[1] - c[4] * c[3])
         alpha = (c[2] - beta * c[4]) / c[1]
-
-    if alpha < 0:
-        alpha = 0
+    #
+    # if alpha < 0:
+    #     alpha = 0
 
     signal_scaled = signal_to_scale * alpha + beta
     rmse = calculate_RMSE(signal_scaled, signal_reference)

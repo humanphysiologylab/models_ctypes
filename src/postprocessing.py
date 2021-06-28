@@ -29,6 +29,12 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
     dump_filename = os.path.join(config_path, 'dump.bin')
     dump_last_filename = os.path.join(config_path, 'dump_last.npy')
     dump_elite_filename = os.path.join(config_path, 'dump_elite.npy')
+    genes_best_filename = os.path.join(config_path, 'genes_best.csv')
+
+    if os.path.isfile(genes_best_filename):
+        genes_best = pd.read_csv(genes_best_filename, index_col=[0, 1]).iloc[:, -1]
+    else:
+        genes_best = None
 
     if os.path.isfile(dump_last_filename):
         dump_last = np.load(dump_last_filename)
@@ -70,8 +76,10 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
 
 
     phenotype_model_last = {}
+    phenotype_model_recreated = {}
+    state = {}
 
-    for exp_cond_name in tqdm(config['experimental_conditions'], desc='phenotype'):
+    for exp_cond_name in config['experimental_conditions']:
 
         if exp_cond_name == 'common':
             continue
@@ -84,56 +92,19 @@ def collect_results(case, dirname_results, load_dump=False, voigt=False):
                 print(f'{filename} is empty')
                 continue
 
+        filename_state = filename.replace('phenotype', 'state')
+        if os.path.isfile(filename_state):
+            state[exp_cond_name] = pd.read_csv(filename_state, index_col=0).iloc[:, -1]
+
+
     output_dict = dict(trio = (group, cell, suffix),
                        genes = genes,
                        dump_last = dump_last,
                        dump_elite = dump_elite,
                        dump = dump,
                        phenotype_model_last = phenotype_model_last,
-                       config = config)
+                       config = config,
+                       genes_best = genes_best,
+                       state=state)
 
     return output_dict
-
-
-def create_C_S(organism, config, exp_cond_name, verbose=False):
-
-    legend = config['runtime']['legend']
-    genes_dict = config['runtime']['genes_dict']
-    constants_dict = config['runtime']['constants_dict']
-
-    genes_current = organism['genes'][['common', exp_cond_name]]
-    constants_dict_current = {**constants_dict['common'],
-                              **constants_dict[exp_cond_name],
-                             }
-
-    C = legend['constants'].copy()
-    S = organism['state'][exp_cond_name].copy()
-
-    for i in range(len(genes_current)):
-        g_name = genes_current.index.get_level_values(1).to_list()[i]
-
-        if g_name in legend['constants'].index:
-            for ecn in ['common', exp_cond_name]:
-                if g_name in genes_dict[ecn]:
-                    if genes_dict[ecn][g_name]['is_multiplier']:
-                        C[g_name] *= genes_current[ecn, g_name]
-                    else:
-                        C[g_name] = genes_current[ecn, g_name]
-
-        if g_name in legend['states'].index:
-            for ecn in ['common', exp_cond_name]:
-                if g_name in genes_dict[ecn]:
-                    if genes_dict[ecn][g_name]['is_multiplier']:
-                        S[g_name] *= genes_current[ecn, g_name]
-                    else:
-                        S[g_name] = genes_current[ecn, g_name]
-
-    for c_name, c in constants_dict_current.items():
-        if verbose:
-            print(c_name, c)
-        if c_name in legend['constants'].index:
-            C[c_name] = c
-        if c_name in legend['states'].index:
-            S[c_name] = c
-
-    return C, S

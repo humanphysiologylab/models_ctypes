@@ -200,7 +200,7 @@ def update_S_C_from_genes_current(S, C, genes_current, exp_cond_name, config):
             S[c_name] = c
 
 
-def update_state(organism, genes_current, config, exp_cond_name):
+def update_genes_from_state(organism, genes_current, config, exp_cond_name):
 
     legend = config['runtime']['legend']
     genes_dict = config['runtime']['genes_dict']
@@ -246,19 +246,20 @@ def update_phenotype_state(organism, config):
         organism['phenotype'][exp_cond_name] = pd.DataFrame(res.T, columns=legend['states'].index)
 
         organism['state'][exp_cond_name] = organism['phenotype'][exp_cond_name].iloc[-1]
-        update_state(organism, genes_current, config, exp_cond_name)
+        update_genes_from_state(organism, genes_current, config, exp_cond_name)
 
     return 0
 
 
-def update_fitness(organism, config):
+def calculate_n_samples_per_stim(exp_cond_name, config):
+    stim_period_legend_name = config['stim_period_legend_name']
+    stim_period = config['experimental_conditions'][exp_cond_name]['params'][stim_period_legend_name]
+    t_sampling = config['t_sampling']
+    n_samples_per_stim = int(np.round(stim_period / t_sampling))
+    return n_samples_per_stim
 
-    def calculate_n_samples_per_stim(exp_cond_name, config):
-        stim_period_legend_name = config['stim_period_legend_name']
-        stim_period = exp_cond['params'][stim_period_legend_name]
-        t_sampling = config['t_sampling']
-        n_samples_per_stim = int(stim_period / t_sampling)
-        return n_samples_per_stim
+
+def update_fitness(organism, config):
 
     loss = 0
 
@@ -291,14 +292,9 @@ def update_fitness(organism, config):
         cat_control_concat_scaled, _, (alpha, beta) = autoscaling(signal_to_scale=cat_control_concat,
                                                                   signal_reference=cat_model_concat)
 
-        if alpha == 0:
+        if alpha <= 0:
             organism['fitness'] = np.NINF
             return
-        #
-        # #
-        # np.savetxt("./misc/control.txt", cat_control_concat_scaled)
-        # np.savetxt("./misc/model.txt", cat_model_concat);
-
 
         cumlen = 0
         for i, x in enumerate(phenotype_control_list):
@@ -314,8 +310,6 @@ def update_fitness(organism, config):
 
             weights = 1 / calculate_mean_abs_noise(phenotype_control)
             weights /= sum(weights)
-
-            # print(weights); exit()
 
             # rmse = calculate_RMSE_weightened(phenotype_control, phenotype_model, weights)
             error = (phenotype_control - phenotype_model)**2
@@ -349,9 +343,6 @@ def update_fitness(organism, config):
 
             v_model = phenotype_model[column_v_model].to_numpy()
             v_control = phenotype_control[column_v_control].to_numpy()
-
-            # shift_control = np.where(v_control > v_control.min() + v_control.ptp() / 2)[0][0]
-            # shift_model = np.where(v_model > v_model.min() + v_model.ptp() / 2)[0][0]
 
             v_level = np.mean(v_model) # 0 # mV
             shift_model = np.where(v_model > v_level)[0][0]
@@ -454,4 +445,3 @@ def save_epoch(population, kw_output):
 
     with open(dump_elite_filename, 'ba+') as f:
         dump_current[0, :].tofile(f)
-

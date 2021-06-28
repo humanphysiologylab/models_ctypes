@@ -10,7 +10,8 @@ def plot_waveforms(phenotype_model, phenotype_control, *,
                    ylim_list=None, yticks_list=None,
                    xlim=None, xticks=None,
                    inset_row_indices=None, xlim_inset=None, xticks_inset=None,
-                   grid=True, grid_inset=True):
+                   grid=True, grid_inset=True,
+                   points_per_ms=1):
 
     ncols = len(phenotype_model)
     nrows = len(phenotype_model[0])
@@ -57,14 +58,15 @@ def plot_waveforms(phenotype_model, phenotype_control, *,
             else:
                 axes_current = [ax]
 
-            kw_lsit  = [{'marker': None, 'ls': '-', 'lw': 1.5},
+            kw_list  = [{'marker': None, 'ls': '-', 'lw': 1.5},
                         {'marker': '.', 'ls': '-', 'lw': 1}]
 
             def plot_fancy(x, ax, **kw):
-                ax.plot(x, color='w', lw=kw['lw']+0.5, zorder=kw.get('zorder', -1))
-                ax.plot(x, **kw)
+                t = np.arange(len(x)) / points_per_ms
+                ax.plot(t, x, color='w', lw=kw['lw']+0.5, zorder=kw.get('zorder', -1))
+                ax.plot(t, x, **kw)
 
-            for ax_, kw in zip(axes_current, kw_lsit):
+            for ax_, kw in zip(axes_current, kw_list):
 
                 kw['color'] = color_control
                 plot_fancy(waveform_control, ax_, **kw, zorder=-1)
