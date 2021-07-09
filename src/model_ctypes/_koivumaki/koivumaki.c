@@ -204,8 +204,54 @@ void initialize_constants_default(double *CONSTANTS) {
     CONSTANTS[90]   =   236000; //  fluo_k_on
     CONSTANTS[91]   =   175;    //  fluo_k_off
 
-    CONSTANTS[92]   =   0;      //  G_seal
-    CONSTANTS[93]   =   0;      // gKb
+    CONSTANTS[92]   =   4.00E-15;   //  G_seal
+    CONSTANTS[93]   =   0.01;      // gKb
+
+    CONSTANTS[94]   = 4.75462;  // K_mobility
+    CONSTANTS[95]   = 3.24155;  // Na_mobility
+
+    CONSTANTS[96]   = 4e-15;    // K_ghk_scaler_seal
+    CONSTANTS[97]   = 4e-15;    // K_ghk_scaler_membrane
+    CONSTANTS[98]   = 3.33e-15; // Na_ghk_scaler_seal
+    CONSTANTS[99]   = 3.33e-15; // Na_ghk_scaler_membrane
+
+}
+
+
+double calc_ghk(int z, double u, double Ci, double Co, double *STATES, double *CONSTANTS) {
+
+    double F = CONSTANTS[29];
+    double R = CONSTANTS[30];
+    double T = CONSTANTS[31];
+    // double F_RT = CONSTANTS[33];
+
+    double V = STATES[23];
+    double zFVRT = z * V * F / R / T;
+
+    double scaler = 1; // gamma / h;
+    double P = u * R * T * scaler;
+
+    double J = P * zFVRT * (Co - Ci * exp(zFVRT)) / (1 - exp(zFVRT));
+    double I = z * F * J;
+    return I;
+}
+
+
+void calc_ghk_K(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
+    int z_K = +1;
+    double u_K = CONSTANTS[94];
+    double Ci_K = STATES[24], Co_K = CONSTANTS[20];
+    double ghk_K = calc_ghk(z_K, u_K, Ci_K, Co_K, STATES, CONSTANTS);
+    ALGEBRAIC[109] = ghk_K;
+}
+
+
+void calc_ghk_Na(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
+    int z_Na = +1;
+    double u_Na = CONSTANTS[95];
+    double Ci_Na = STATES[41], Co_Na = CONSTANTS[21];
+    double ghk_Na = calc_ghk(z_Na, u_Na, Ci_Na, Co_Na, STATES, CONSTANTS);
+    ALGEBRAIC[110] = ghk_Na;
 }
 
 
@@ -338,7 +384,10 @@ void calc_ina(const double time, double *STATES, double *CONSTANTS, double *ALGE
 
 void calc_inab(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
-    ALGEBRAIC[92] = CONSTANTS[65] * (STATES[23] - ALGEBRAIC[97]);
+    // ALGEBRAIC[92] = CONSTANTS[65] * (STATES[23] - ALGEBRAIC[97]);
+    double ghk_Na = ALGEBRAIC[110];
+    double Na_ghk_scaler_membrane = CONSTANTS[99];
+    ALGEBRAIC[92] = Na_ghk_scaler_membrane * ghk_Na;
 }
 
 void calc_inaca(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
@@ -379,7 +428,8 @@ void calc_nernst(const double time, double *STATES, double *CONSTANTS, double *A
 
 void calc_potassium(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
-    ALGEBRAIC[71] = ALGEBRAIC[104] + ALGEBRAIC[87] + ALGEBRAIC[103] + ALGEBRAIC[101] + ALGEBRAIC[100] - 2.0 * ALGEBRAIC[88] + ALGEBRAIC[102] + ALGEBRAIC[56] + ALGEBRAIC[108];
+    ALGEBRAIC[71] = ALGEBRAIC[104] + ALGEBRAIC[87] + ALGEBRAIC[103] + ALGEBRAIC[101] + ALGEBRAIC[100] - 2.0 * ALGEBRAIC[88] + ALGEBRAIC[102] + ALGEBRAIC[56];
+    ALGEBRAIC[71] += ALGEBRAIC[108] + CONSTANTS[92] * ALGEBRAIC[109];  // IKb + G_seal * IK_ghk
     RATES[24] = (-ALGEBRAIC[71]) / (CONSTANTS[18] * CONSTANTS[29]);
 }
 
@@ -439,7 +489,8 @@ void calc_serca(const double time, double *STATES, double *CONSTANTS, double *AL
 
 void calc_sodium(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
-    ALGEBRAIC[93] = ALGEBRAIC[99] + ALGEBRAIC[92] + 3.0 * ALGEBRAIC[88] + 3.0 * ALGEBRAIC[62] + ALGEBRAIC[90];
+    ALGEBRAIC[93] = ALGEBRAIC[99] + 3.0 * ALGEBRAIC[88] + 3.0 * ALGEBRAIC[62] + ALGEBRAIC[90];
+    ALGEBRAIC[93] += ALGEBRAIC[92] + CONSTANTS[92] * ALGEBRAIC[110];  // INab + G_seal * INa_ghk
     ALGEBRAIC[96] = CONSTANTS[80] * CONSTANTS[6] / CONSTANTS[12] * (STATES[42] - STATES[41]) * 1e-06;
     ALGEBRAIC[47] = 1.0 / (1.0 + CONSTANTS[79] * CONSTANTS[81] / pow(STATES[42] + CONSTANTS[81], 2.0));
     RATES[41] = ALGEBRAIC[96] / CONSTANTS[17];
@@ -497,18 +548,30 @@ void calc_means(const double time, double *STATES, double *CONSTANTS, double *AL
 
 void calc_iseal(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
-    ALGEBRAIC[107] = CONSTANTS[92] * STATES[23];  // I_Iseal = G_seal * V
+    // ALGEBRAIC[107] = CONSTANTS[92] * STATES[23];  // I_Iseal = G_seal * V
+
+    // I_seal = G_seal * (IK_ghk + INa_ghk)
+    ALGEBRAIC[107] = CONSTANTS[92] * (ALGEBRAIC[109] + ALGEBRAIC[110]);
 }
 
 
 void calc_ikb(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
     /* IKb = gKb * (V - EK) */
-    ALGEBRAIC[108] = CONSTANTS[93] * (STATES[23] - ALGEBRAIC[105]);
+    double ghk_K = ALGEBRAIC[109];
+    double K_ghk_scaler_membrane = CONSTANTS[97];
+    ALGEBRAIC[108] = K_ghk_scaler_membrane * ghk_K; // CONSTANTS[93] * (STATES[23] - ALGEBRAIC[105]);
 }
 
 
 void compute_rates_algebraic(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
+
+    calc_ghk_K(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_ghk_Na(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+
+    calc_iseal(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_ikb(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_inab(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
     calc_ical(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_icap(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
@@ -525,11 +588,7 @@ void compute_rates_algebraic(const double time, double *STATES, double *CONSTANT
     calc_iks(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_ikur(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_ina(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
-    calc_inab(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_it(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
-
-    calc_iseal(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
-    calc_ikb(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
     calc_calcium(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_membrane(time, STATES, CONSTANTS, ALGEBRAIC, RATES);

@@ -91,5 +91,11 @@ J_bulkSERCA_multiplier,1
 fluo_tot,0.01
 fluo_k_on,236000
 fluo_k_off,175
-G_seal,0
+G_seal,4.00E-15
 gKb,0.01
+K_mobility,4.75462
+Na_mobility,3.24155
+K_ghk_scaler_seal,4.00E-15
+K_ghk_scaler_membrane,4.00E-15
+Na_ghk_scaler_seal,3.33E-15
+Na_ghk_scaler_membrane,3.33E-15
