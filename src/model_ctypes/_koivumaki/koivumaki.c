@@ -215,6 +215,14 @@ void initialize_constants_default(double *CONSTANTS) {
     CONSTANTS[98]   = 3.33e-15; // Na_ghk_scaler_seal
     CONSTANTS[99]   = 3.33e-15; // Na_ghk_scaler_membrane
 
+    CONSTANTS[100]  = 48;       // Cl_i, mM
+    CONSTANTS[101]  = 150;      // Cl_o, mM
+    CONSTANTS[102]  = 4.93639;  // Cl_mobility
+
+    CONSTANTS[103]  = 92;       // Aspartate_i, mM
+    CONSTANTS[104]  = 0;        // Aspartate_o, mM
+    CONSTANTS[105]  = 1.42639;  // Aspartate_mobility
+
 }
 
 
@@ -252,6 +260,24 @@ void calc_ghk_Na(const double time, double *STATES, double *CONSTANTS, double *A
     double Ci_Na = STATES[41], Co_Na = CONSTANTS[21];
     double ghk_Na = calc_ghk(z_Na, u_Na, Ci_Na, Co_Na, STATES, CONSTANTS);
     ALGEBRAIC[110] = ghk_Na;
+}
+
+
+void calc_ghk_Cl(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
+    int z_Cl = -1;
+    double u_Cl = CONSTANTS[102];
+    double Ci_Cl = CONSTANTS[100], Co_Cl = CONSTANTS[101];
+    double ghk_Cl = calc_ghk(z_Cl, u_Cl, Ci_Cl, Co_Cl, STATES, CONSTANTS);
+    ALGEBRAIC[111] = ghk_Cl;
+}
+
+
+void calc_ghk_Aspartate(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES) {
+    int z_Aspartate = -1;
+    double u_Aspartate = CONSTANTS[105];
+    double Ci_Aspartate = CONSTANTS[103], Co_Aspartate = CONSTANTS[104];
+    double ghk_Aspartate = calc_ghk(z_Aspartate, u_Aspartate, Ci_Aspartate, Co_Aspartate, STATES, CONSTANTS);
+    ALGEBRAIC[112] = ghk_Aspartate;
 }
 
 
@@ -550,8 +576,8 @@ void calc_iseal(const double time, double *STATES, double *CONSTANTS, double *AL
 {
     // ALGEBRAIC[107] = CONSTANTS[92] * STATES[23];  // I_Iseal = G_seal * V
 
-    // I_seal = G_seal * (IK_ghk + INa_ghk)
-    ALGEBRAIC[107] = CONSTANTS[92] * (ALGEBRAIC[109] + ALGEBRAIC[110]);
+    // I_seal = G_seal * (IK_ghk + INa_ghk + ICl_ghk + IAspartate_ghk)
+    ALGEBRAIC[107] = CONSTANTS[92] * (ALGEBRAIC[109] + ALGEBRAIC[110] + ALGEBRAIC[111] + ALGEBRAIC[112]);
 }
 
 
@@ -568,6 +594,8 @@ void compute_rates_algebraic(const double time, double *STATES, double *CONSTANT
 
     calc_ghk_K(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_ghk_Na(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_ghk_Cl(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
+    calc_ghk_Aspartate(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
 
     calc_iseal(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
     calc_ikb(time, STATES, CONSTANTS, ALGEBRAIC, RATES);
