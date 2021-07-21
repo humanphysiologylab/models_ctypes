@@ -105,3 +105,5 @@ Cl_mobility,4.93639
 Aspartate_i,92
 Aspartate_o,0
 Aspartate_mobility,1.42639
+Ca_mobility,1.92449
+Ca_ghk_scaler_membrane,2.00E-12
