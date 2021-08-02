@@ -313,8 +313,8 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol, double
                           /*m*/ 0.0001,       /*it_r*/ 0.0001,    /*it_s*/ 0.001,     /*V*/ 0.0001,       /*Ki*/ 0.001,
                           /*ryr_a1*/ 0.001,   /*ryr_a2*/ 0.001,   /*ryr_a3*/ 0.001,   /*ryr_ass*/ 0.001,  /*c1*/ 0.001,
                           /*c2*/ 0.001,       /*c3*/ 0.001,       /*css*/ 1e-06,      /*o1*/ 1e-06,       /*o2*/ 1e-06,
-                          /*o3*/ 1e-06,       /*oss*/ 1e-06,      /*serca_a1*/ 0.001, /*serca_a2*/ 0.001, /*serca_a3*/ 0.001,
-                          /*serca_ass*/ 0.001, /*Nai*/ 0.001,      /*Nass*/ 0.001,     /*fluo_1*/ 1e-05,   /*fluo_2*/ 1e-05,
+                          /*o3*/ 1e-06,       /*oss*/ 1e-06,      /*serca_a1*/ 1e-6, /*serca_a2*/ 1e-6, /*serca_a3*/ 1e-6,
+                          /*serca_ass*/ 1e-6, /*Nai*/ 0.001,      /*Nass*/ 0.001,     /*fluo_1*/ 1e-05,   /*fluo_2*/ 1e-05,
                           /*fluo_3*/ 1e-05,   /*fluo_4*/ 1e-05,   /*fluo_ss*/ 1e-05,  /*CaSR*/ 0.001,     /*Cai*/ 1e-05,
                           /*fluo*/ 1e-05};
 
