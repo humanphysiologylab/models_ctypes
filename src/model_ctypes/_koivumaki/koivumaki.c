@@ -295,7 +295,7 @@ void calc_ghk_Ca(const double time, double *STATES, double *CONSTANTS, double *A
 /* Components */
 void calc_calcium(const double time, double *STATES, double *CONSTANTS, double *ALGEBRAIC, double *RATES)
 {
-    ALGEBRAIC[2] = (-ALGEBRAIC[84]) /*- ALGEBRAIC[86] */ -  - ALGEBRAIC[95] + 2.0 * ALGEBRAIC[62];
+    ALGEBRAIC[2] = (-ALGEBRAIC[84]) /*- ALGEBRAIC[86] */ -  ALGEBRAIC[95] + 2.0 * ALGEBRAIC[62];
     ALGEBRAIC[2] -= ALGEBRAIC[86] + CONSTANTS[92] * ALGEBRAIC[113];  // ICab + G_seal * ICa_ghk
 
     ALGEBRAIC[24] = CONSTANTS[78] * (STATES[0] - STATES[4]) * CONSTANTS[7];
