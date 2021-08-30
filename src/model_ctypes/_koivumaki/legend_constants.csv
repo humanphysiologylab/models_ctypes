@@ -98,7 +98,7 @@ Na_mobility,3.24155
 K_ghk_scaler_seal,4E-15
 K_ghk_scaler_membrane,4E-15
 Na_ghk_scaler_seal,3.33E-15
-Na_ghk_scaler_membrane,3.33E-15
+Na_ghk_scaler_membrane,2.73E-14
 Cl_i,48
 Cl_o,150
 Cl_mobility,4.93639
