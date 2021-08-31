@@ -9,6 +9,9 @@
 int rhs(double t, double *y, double *ydot, void *data) {
 
     double *C = (double *)data, *A = ((double *)data) + C_SIZE;
+    for (int i = 0; i < S_SIZE; ++i) {
+        ydot[i] = 0.;  // for safety
+    }
     compute_rates_algebraic(t, y, C, A, ydot);
     return 0;
 }
@@ -292,7 +295,11 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol, double
     double *A = data + C_SIZE;
 
     for (int i = 0; i < C_SIZE; ++i) {
-        data[i] = C[i];
+        if (i < C_SIZE) {
+            data[i] = C[i];
+        } else {
+            data[i] = 0.;
+        }
     }
 
     double  stim_period = C[85];
