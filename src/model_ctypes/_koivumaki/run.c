@@ -98,7 +98,6 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol, double
     int     ctx_state       = 0;
 
 
-    double t_end_local_euler = 0.025;  // s = 25 ms
     double dt_euler = tol; // 5e-6;
 
     memcpy(output, S, S_SIZE * sizeof(double));
@@ -119,6 +118,7 @@ int run(double *S, double *C, int n_beats, double t_sampling, double tol, double
 
         double t_start_local = stim_period * i_beat;
         double t_end_local = stim_period * (i_beat + 1);
+        double t_end_local_euler = stim_period * i_beat + 0.025;  // s = 25 ms
 
 
         /* ----------------------*/
