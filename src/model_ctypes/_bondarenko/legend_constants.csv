@@ -1,7 +1,7 @@
 name,value
 CL,1000.0
-gna ,1.0
-knaca ,1.0
+gna,1.0
+knaca,1.0
 inakmax,1.0
 ipcamax,1.0
 gcab,1.0
@@ -12,8 +12,18 @@ gkr,1.0
 gclca,1.0
 CaLF,1.0
 CaTF,1.0
-v1,1.0
-v2,1.0
-v3,1.0
+RyR,1.0
+jleak,1.0
+SERCA,1.0
 gcakF,1.0
-istim,80
+istim,0.0
+ik1,1.0
+funny,1.0
+Na_intra_rate,1.0
+K_intra_rate,1.0
+V_factor,1.0
+CaL13,1.0
+CaL13_inact_tau,1.0
+INa_11,1.0
+ficalcav,0.2
+fical13cav,0.21

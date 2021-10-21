@@ -23,7 +23,7 @@ SRCS =  \
 ../../liblsoda/src/stoda.c \
 ../../liblsoda/src/vmnorm.c \
 ../../liblsoda/src/strdup_printf.c \
-./bondarenko_control.c \
+./bondarenko_funny.c \
 ./run.c
 
 OBJS = $(SRCS:%.c=%.o)

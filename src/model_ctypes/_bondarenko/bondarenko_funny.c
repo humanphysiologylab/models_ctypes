@@ -3,32 +3,229 @@
 #include <fenv.h>
 #include "math.h"
 
-void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC)
+
+void initialize_states_default(double *STATES) {
+    //time = 0.0f;
+    STATES[1] = -0.8088310412e+02d;
+    STATES[2] = 0.9279026900e-01d;
+    STATES[3] = 0.1620528775e+04d;
+    STATES[4] = 0.8053999501e+01d;
+    STATES[5] = 0.1222160781e+03d;
+    STATES[6] = 0.1620528775e+04d;
+    STATES[7] = 0.9279026946e-01d;
+    STATES[8] = 0.8851691228e-12d;
+    STATES[9] = 0.9615600724e+00d;
+    STATES[10] = 0.3767463428e-02d;
+    STATES[11] = 0.5535450499e-05d;
+    STATES[12] = 0.3614717015e-08d;
+    STATES[13] = 0.7908511386e-12d;
+    STATES[14] = 0.7153680173e-08d;
+    STATES[15] = 0.6391662360e-08d;
+    STATES[16] = 0.9967529680e+00d;
+    STATES[17] = 0.7087660992e-04d;
+    STATES[18] = 0.6300248702e-05d;
+    STATES[19] = 0.2112480482e-10d;
+    STATES[20] = 0.4628585970e+00d;
+    STATES[21] = 0.1062737990e-01d;
+    STATES[22] = 0.9600858225e-04d;
+    STATES[23] = 0.1376322742e+05d;
+    STATES[24] = 0.166e+06d;
+    STATES[25] = 0.4139033547e-02d;
+    STATES[26] = 0.9999623535e+00d;
+    STATES[27] = 0.3298367341e-03d;
+    STATES[28] = 0.5091689794e-03d;
+    STATES[29] = 0.9980927689e+00d;
+    STATES[30] = 0.9979010383e+00d;
+    STATES[31] = 0.1113258849e-02d;
+    STATES[32] = 0.7192382272e-03d;
+    STATES[33] = 0.2223437325e-03d;
+    STATES[34] = 0.4412087393e-04d;
+    STATES[35] = 0.5091689794e-03d;
+    STATES[36] = 0.9980927689e+00d;
+    STATES[37] = 0.1552405441e-06d;
+    STATES[38] = 0.6461071366e-04d;
+    STATES[39] = 0.3762774987e-05d;
+    STATES[40] = 0.8212756509e-08d;
+    STATES[41] = 0.7151890060e-02d;
+    STATES[42] = 0.3114893963e+00d;
+    STATES[43] = 0.5091689794e-03d;
+    STATES[44] = 0.3779115232e-12d;
+    STATES[45] = 0.1193078173e-02d;
+    STATES[46] = 0.3630488755e-61d;
+    STATES[47] = 0.3490326981e-02d;
+    STATES[48] = 0.5883268221e-02d;
+    STATES[49] = 0.3955088510e-03d;
+    STATES[50] = 0.4450890836e-01d;
+    STATES[51] = 0.3630488755e-61d;
+    STATES[52] = 0.2392020281e-01d;
+    STATES[53] = 0.6409630097e-02d;
+    STATES[54] = 0.2487944176e-02d;
+    STATES[55] = 0.1722672905e-02d;
+    STATES[56] = 0.3630488755e-61d;
+    STATES[57] = 0.3771728607e-03d;
+    STATES[58] = 0.7236469606e-03d;
+    STATES[59] = 0.3474740964e-03d;
+    STATES[60] = 0.1300635182e+06d;
+    STATES[61] = 0.5077713406e+05d;
+    STATES[62] = 0.2353396779e+05d;
+    STATES[63] = 0.2193421483e+04d;
+    STATES[64] = 0.1951294807e-01d;
+    STATES[65] = 0.9059006924e-02d;
+    STATES[66] = 0.1097267542e+05d;
+    STATES[67] = 0.9355062972e+05d;
+    STATES[68] = 0.2873599432e+05d;
+    STATES[69] = 0.6773138136e-90d;
+    STATES[70] = 0.1449457584e-01d;
+    STATES[71] = 0.1340498892e+05d;
+    STATES[72] = 0.2242397227e+00d;
+    STATES[73] = 0.3690967042e+05d;
+    STATES[74] = 0.1340729197e-02d;
+    STATES[75] = 0.4134187505e-02d;
+    STATES[76] = 0.4430125145e+04d;
+    STATES[77] = 0.7006267909e+04d;
+    STATES[78] = 0.1421393882e+05d;
+    STATES[79] = 0.7736146378e+01d;
+    STATES[80] = 0.3812957050e+00d;
+    STATES[81] = 0.5158797692e-01d;
+    STATES[82] = 0.8896934822e+00d;
+    STATES[83] = 0.7537918546e-01d;
+    STATES[84] = 0.8253133062e+00d;
+    STATES[85] = 0.6836347022e+01d;
+    STATES[86] = 0.6205890724e+00d;
+    STATES[87] = 0.1172793205e+00d;
+    STATES[88] = 0.1154255173e+01d;
+    STATES[89] = 0.1320878782e+00d;
+    STATES[90] = 0.1033166329e+01d;
+    STATES[91] = 0.9274466720e+01d;
+    STATES[92] = 0.1086997100e+00d;
+    STATES[93] = 0.1546752825e-01d;
+    STATES[94] = 0.2929517738e+00d;
+    STATES[95] = 0.6863855598e-01d;
+    STATES[96] = 0.2353122184e+00d;
+    STATES[97] = 0.3382412669e+00d;
+    STATES[98] = 0.4724516017e+00d;
+    STATES[99] = 0.4126582483e+00d;
+    STATES[100] = 0.2320312876e-01d;
+    STATES[101] = 0.6026039427e+00d;
+    STATES[102] = 0.6026039427e+00d;
+    STATES[103] = 0.2596146734e+00d;
+    STATES[104] = 0.3675832948e+00d;
+    STATES[105] = 0.3813640007e+00d;
+    STATES[106] = 0.8851705616e-12d;
+    STATES[107] = 0.2605069110e-10d;
+    STATES[108] = 0.3415627435e-01d;
+    STATES[109] = 0.5076951530e-03d;
+    STATES[110] = 0.2829869165e-05d;
+    STATES[111] = 0.7010470517e-08d;
+    STATES[112] = 0.2327573109e-10d;
+    STATES[113] = 0.5549734835e-07d;
+    STATES[114] = 0.4958553899e-07d;
+    STATES[115] = 0.6512671925e-11d;
+    STATES[116] = 0.3169194559e-02d;
+    STATES[117] = 0.6261242517e-06d;
+    STATES[118] = 0.3339118148e-07d;
+    STATES[119] = 0.1866017795e-12d;
+    STATES[120] = 0.1213360465e+00d;
+    STATES[121] = 0.2785949016e-02d;
+    STATES[122] = 0.2516918244e-04d;
+    STATES[123] = 0.4069800161e-07d;
+    STATES[124] = 0.1694073185e-04d;
+    STATES[125] = 0.1028703688e-05d;
+    STATES[126] = 0.6604024237e-08d;
+    STATES[127] = 0.1875148561e-02d;
+    STATES[128] = 0.8166786118e-01d;
+    STATES[129] = 0.3801202195e+00d;
+    STATES[130] = 0.5091689794e-03d;
+    STATES[131] = 0.9980927689e+00d;
+    STATES[132] = 0.9214774521e+00d;
+    STATES[133] = 0.9908502903e+00d;
+    STATES[134] = 0.2087704319e+00d;
+    STATES[135] = 0.8637307739e-03d;
+    STATES[136] = 0.9999881755e+00d;
+    STATES[137] = 0.8187695769e-12d;
+    STATES[138] = 0.8894320487e+00d;
+    STATES[139] = 0.3484859972e-02d;
+    STATES[140] = 0.5120227116e-05d;
+    STATES[141] = 0.3343570256e-08d;
+    STATES[142] = 0.8187721513e-12d;
+    STATES[143] = 0.7315039113e-12d;
+    STATES[144] = 0.6616944790e-08d;
+    STATES[145] = 0.5912117549e-08d;
+    STATES[146] = 0.8046441685e-10d;
+    STATES[147] = 0.1055007176e+00d;
+    STATES[148] = 0.1568150421e-02d;
+    STATES[149] = 0.8740796912e-05d;
+    STATES[150] = 0.2165368505e-07d;
+    STATES[151] = 0.2011610269e-10d;
+    STATES[152] = 0.7189314575e-10d;
+    STATES[153] = 0.1714179939e-06d;
+    STATES[154] = 0.1531578593e-06d;
+    STATES[155] = 0.6077748720e-01d;
+    STATES[156] = 0.5796341475e-38d;
+    STATES[157] = 0.3591463241e-02d;
+    STATES[158] = 0.4069691772e-03d;
+    STATES[159] = 0.4580528431e-03d;
+    STATES[160] = 0.5796341475e-39d;
+    STATES[161] = 0.2305390265e-05d;
+    STATES[162] = 0.2397840156e-06d;
+    STATES[163] = 0.8422801321e+00d;
+    STATES[164] = 0.5090725598e-01d;
+    STATES[165] = 0.1153809439e-02d;
+    STATES[166] = 0.1162267165e-04d;
+    STATES[167] = 0.4390450831e-07d;
+    STATES[168] = 0.6508479153e-06d;
+    STATES[169] = 0.6016286658e-01d;
+    STATES[170] = 0.3636232570e-01d;
+    STATES[171] = 0.8241495995e-02d;
+    STATES[172] = 0.8301908322e-03d;
+    STATES[173] = 0.3136036308e-05d;
+    STATES[174] = 0.4648913681e-04d;
+    STATES[175] = 0.2965524523e-01d;
+    STATES[176] = 0.2144114378e-01d;
+    STATES[177] = 0.8608445698e+00d;
+    STATES[178] = 0.1198169988e+00d;
+    STATES[179] = 0.1334142186e-01d;
+    STATES[180] = 0.2971089895e-03d;
+    STATES[181] = 0.2134627497e-02d;
+    STATES[182] = 0.3565307875e-02d;
+    STATES[183] = 0.1184324373e-01d;
+    STATES[184] = 0.5091689794e-03d;
+    STATES[185] = 0.9980927689e+00d;
+    STATES[186] = 0.0281231662d;
+    STATES[187] = 0.0001993197d;
+    STATES[188] = 0.9812943664d;
+    STATES[189] = 0.767951881d;
+}
+
+void fun(const double time, double* y, double* ydot, double* ALGEBRAIC, const double* params)
 {
-//    y[9] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
-//y[9] == ALGEBRAIC[0]
-//    y[138] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
-//y[138] == ALGEBRAIC[1]
-//    y[16] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
-//y[16] == ALGEBRAIC[2]
-//    y[20] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
-//y[20] == ALGEBRAIC[3]
-//    y[30] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
-//y[30] == ALGEBRAIC[4]
+    //y[9]
     ALGEBRAIC[0] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
+    //y[138]
     ALGEBRAIC[1] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
+    //y[16]
     ALGEBRAIC[2] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
+    //y[20]
     ALGEBRAIC[3] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
+    //y[30]
     ALGEBRAIC[4] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
+
+
+
+//    y[9] = 1.0f - (y[8] + y[10] + y[11] + y[12] + y[13] + y[14] + y[15] + y[106] + y[107] + y[108] + y[109] + y[110] + y[111] + y[112] + y[113] + y[114] + y[115]);
+//    y[138] = 1.0f - (y[137] + y[139] + y[140] + y[141] + y[142] + y[143] + y[144] + y[145] + y[146] + y[147] + y[148] + y[149] + y[150] + y[151] + y[152] + y[153] + y[154]);
+//    y[16] = 1.0-(y[17]+y[18]+y[19]+y[116]+y[117]+y[118]+y[119]);
+//    y[20] = 1.0f - (y[21] + y[22] + y[37] + y[38] + y[39] + y[40] + y[41] + y[42] + y[120] + y[121] + y[122] + y[123] + y[124] + y[125] + y[126] + y[127] + y[128]);
+//    y[30] = 1.0f - (y[31] + y[32] + y[33] + y[34]);
     double CL = params[0];
     int stims_passed = (int)floor(time/CL);
     double r_t = time - stims_passed*CL;
-    double istim = 0.0;
+    ALGEBRAIC[5] = 0.0; //Istim
     if(r_t <= 1.0f)
     {
-        istim = 80.0;
+        ALGEBRAIC[5] = params[17];
     }else{
-        istim = 0.0;
+        ALGEBRAIC[5] = 0.0;
     }
 
   // COMMON a1
@@ -82,13 +279,20 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   //C
   //C Cell Geometry Parameters
   //C
-  acap = 0.5931e-4f;
-  double vcell = 22.1200e-6f;
-  vmyo = 13.9600e-6f;
-  double vcyt = 13.9600e-6f;
-  vjsr = 0.1349e-6f;
-  vnsr = 2.5523e-6f;
-  vss = 1.4850e-9f * 2.0f;
+  //acap = 0.5931e-4f;//old
+  //double vcell = 22.1200e-6f;//old
+  //vmyo = 13.9600e-6f;//old
+  //double vcyt = 13.9600e-6f;//old
+  //vjsr = 0.1349e-6f; //old
+  //vnsr = 2.5523e-6f; //old
+  //vss = 1.4850e-9f * 2.0f; //old
+  acap = 0.5931e-4f * 0.5;//new
+  double vcell = 3.0e-6f;//new
+  double vcyt = 1.346e-6f;//new
+  vmyo = vcyt;//new
+  vnsr = 0.0004*vcell; //new
+  vjsr = 0.0003*vcell; //new
+  vss = 3.328e-8f;//new
   double vcav = 0.02f * vcell;
   double vecav = 0.04f * vcell;
   //C
@@ -148,10 +352,11 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   //C
   //C T-type Ca2+ Channel Parameters
   //C
-  double k_catpv = 9.5f * exp(y[1] / 15.0f);
-  double k_catmv = 0.008f * exp(-1.0f * y[1] / 18.0f) * 4.0f;
+  double offset_cat = 0.0f;
+  double k_catpv = 9.5f * exp((y[1]+offset_cat) / 15.0f);
+  double k_catmv = 0.008f * exp(-1.0f * (y[1]+offset_cat) / 18.0f) * 4.0f;
   double k_catpo = 4.0f;
-  double k_catmo = 0.025f * exp(-1.0f * y[1] / 34.0f);
+  double k_catmo = 0.025f * exp(-1.0f * (y[1]+offset_cat) / 34.0f);
   double k_catpi = 0.070f;
   double k_catmi = 0.0014f * 0.7f;
   double f_cat = 0.2f;
@@ -173,6 +378,9 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   double ccsqntot = 15000.0f * 0.6f;
   double kmcmdn = 0.238f;
   double kmcsqn = 800.0f;
+  //Kharche
+  double gh = 0.228; //nS/pF
+
   //C
   //C Membrane Current Parameters
   //C
@@ -709,7 +917,7 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   double pp2acav = 0.1f;
   double ppcav = pp1cav + pp2acav;
   double icaltot = 0.0273f;
-  ficalcav = 0.2f;
+  ficalcav = params[26];
   double icalcav = ficalcav * icaltot * vcell / vcav;
   double icalecav = (1.0f - ficalcav) * icaltot * vcell / vecav;
   double kicalpka = 2.0e-5f * 0.87f;
@@ -845,10 +1053,10 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   //C
   //C Ica    : L-type calcium current
   //C
-  icasc = ficalcav * (sfica * y[8] + sficap * y[107]) * (y[1] - 52.0f);
-  icase = (1.0f - ficalcav) * (sfica * y[137] + sficap * y[146]) * (y[
+  icasc = CaLFactor * ficalcav * (sfica * y[8] + sficap * y[107]) * (y[1] - 52.0f);
+  icase = CaLFactor * (1.0f - ficalcav) * (sfica * y[137] + sficap * y[146]) * (y[
     1] - 52.0f);
-  icas = CaLFactor * (icasc + icase);
+  icas =  icasc + icase;
   //C
   //C Icat   : T-type calcium current
   //C
@@ -896,7 +1104,7 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   double tempa8 = (0.8f * exp(0.08032f * (y[1] - ek + 5.476f)) +
     exp(0.06175f * (y[1] - ek - 594.31f))) / (1.0f + exp(
     -0.5143f * (y[1] - ek + 4.753f)));
-  double gk1 = 1.7f * 0.27f * sqrt(cko / 5400.0f);
+  double gk1 = params[18] * 1.7f * 0.27f * sqrt(cko / 5400.0f);
   double gk1p = 1.7f * 0.27f * sqrt(cko / 5400.0f);
   ik1 = (gk1 * y[133] * tempa7 / (tempa7 + tempa8) + gk1p * (1 - y[
     133]) * tempa7 / (tempa7 + tempa8)) * (y[1] - ek);
@@ -913,7 +1121,7 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
     131] * (1 - y[132])) * (y[1] - ek);
   ikur3 = gkur3 * y[43] * (y[1] - ek);
   ikur4 = gkur4 * y[184] * y[185] * (y[1] - ek);
-  ikur = ikur1 + ikur2 + ikur3 + ikur4;
+  ikur = 0.0 * (ikur1 + ikur2 + ikur3 + ikur4);
   //C
   //C Ikr    : HERG current (Wang et al., 1997]
   //C
@@ -932,17 +1140,67 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   icak = g_cak * (y[181] + y[182]) * (1 - y[183]);
   //C
   //C***********************************************************************
+  //Kharche
+  //Funny current activation curves
+  double funny_yi = 1/(1+exp((y[1]+106.8)/13));
+  double tau_y = 1.505/(exp(-0.011*(y[1]+590.3))+exp((y[1]+85.1)/17.2));
+  ydot[186] = (funny_yi - y[186]) / tau_y;
+  double ifna = params[19] * 0.3833 * gh * y[186] * (y[1] - ena);
+  double ifk = params[19] * 0.6167 * gh * y[186] * (y[1] - ek);
+
+  //Cav1.3 CaL current
+  double gcal13 = 0.72; //nS/pF
+  double alpha_fca = 0.021;
+  double kmfca = 0.00035;
+
+  double dl13_inf = 1/(1 + exp((-y[1] - 27.0)/7.0));
+  double fl13_inf = 1/(1 + exp((y[1] + 50.0)/6.0));
+  double fca_inf_ecav = kmfca/(kmfca + y[7]);
+  double fca_inf_cav = kmfca/(kmfca + y[2]);
+  double alpha_dl13 = -28.39 * (y[1] + 35)/(exp((-y[1] + 35.0)/2.5) - 1) - 84.9 * y[1] / (exp(-0.208 * y[1]) - 1);
+  double beta_dl13 = 11.43 * (y[1] - 5)/(exp(0.4 * (y[1] - 5)) - 1);
+  double tau_dl13 = 2000/(alpha_dl13 + beta_dl13);
+  double tau_fl13 = params[24] * 7.485 + 45.774 * exp(-0.5 * pow((y[1] + 28.753) / 11, 2));
+  double tau_fca_ecav = fca_inf_ecav/alpha_fca;
+  double tau_fca_cav = fca_inf_cav/alpha_fca;
+  ydot[187] = (dl13_inf - y[187]) / tau_dl13; //dl13
+  ydot[188] = (fl13_inf - y[188]) / tau_fl13; //fl13
+  ydot[189] = (fca_inf_ecav - y[189]) / tau_fca_ecav; //fca_ecav
+  ydot[190] = (fca_inf_cav - y[190]) / tau_fca_cav; //fca_cav
+  double cal13_cav_fraction = params[27];
+  double ical13_ecav = params[23] * (1.0f - cal13_cav_fraction) * gcal13 * y[187] * y[188] * y[189] * (y[1] - 52.0f);
+  double ical13_cav = params[23] * cal13_cav_fraction * gcal13 * y[187] * y[188] * y[190] * (y[1] - 52.0f);
+  double ical13 = (ical13_ecav + ical13_cav);
+  //
+  //late Na current
+  //
+  double gna_11 = 2.37e-4f;
+
+  double m11_inf = pow(1.0/(1.0 + exp(-1.0 * (y[1] + 31.0) / 5.0)), 1.0/3.0);
+  double h11_inf = 1.0/(1.0 + exp((y[1] + 56.0)/ 3.0));
+  double j11_inf = h11_inf;
+  double F_Na = 0.0952 * exp(-0.063 * (y[1] + 34.4)) / (1.0 + 1.66 * exp(-0.225 * (y[1] + 63.7))) + 0.0869;
+  double tau_m = 0.6247 / (0.832 * exp(-1.0 * (y[1] + 46.7) / 2.985) + 0.6274 * exp((y[1] + 55.01) / 12.195)) + 0.04569;
+  double tau_h = 0.113 / (1 / (13475.066 * exp((y[1] - 59.398) / 15.645)) + 1/(1.113 + 0.044 * exp(-1.0 * (y[1] - 86.768)/8.059)));
+  double tau_j = 0.125 / (1 / (140557.232 * exp((y[1] - 59.455) / 17.380)) + 1/(2.471 + 0.767 * exp(-1.0 * (y[1] - 68.931)/18.237)));
+  ydot[191] = (m11_inf - y[191]) / tau_m; //m11
+  ydot[192] = (h11_inf - y[192]) / tau_h; //h11
+  ydot[193] = (j11_inf - y[193]) / tau_j; //j11
+  double hs11 = (1.0 - F_Na) * y[192] + F_Na * y[193];
+  double ina_11 = 1.0e-5f * params[25] * (gna_11 * pow(y[191], 3) * hs11 * cnao * y[1] * (exp((y[1] - ena) * ifactor) - 1.0)/(exp(y[1] * ifactor) - 1.0) * f * ifactor);
   //C
   //C y[1]  membrane potential
   //C
-  double sum_i = icas + icab + inaca + ipca + ina + inab + iclca +
-    inak + ikto + ik1 + iks + ikur + ikr - istim + icat + icak;
-  ydot[1] = -sum_i / cm;
+  double sum_i = icas + icab + inaca + ipca + ina + inab + iclca + ina_11 +
+    inak + ikto + ik1 + iks + ikur + ikr - ALGEBRAIC[5] + icat + icak + ifna +
+    ifk + ical13;
+  //ydot[1] = 0;
+  ydot[1] = params[22] * (-sum_i / cm);
   //C
   //C y[2]  intracellular calcium Cai
   //C
   bi = 1.0f / (1 + ccmdntot * kmcmdn / ((kmcmdn + y[2]) * (kmcmdn + y[2])));
-  double temp1 = 0.5f * (icab - 2.0f * inaca + ipca + icasc + icat) *
+  double temp1 = 0.5f * (icab - 2.0f * inaca + ipca + icasc + ical13_cav + icat) *
     acap / (vmyo * f);
   ydot[2] = bi * (jleak + jxfert - jup - jtrpn - temp1);
   //C
@@ -977,7 +1235,7 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   double temp3 = (kmcmdn + y[7]) * (kmcmdn + y[7]);
   bss = 1.0f / (1.0f + ccmdntot * kmcmdn / temp3);
   double temp4 = jrelt * vjsr / vss - jxfert * vmyo / vss;
-  ydot[7] = bss * (temp4 - icase * acap / (2.0f * vss * f));
+  ydot[7] = bss * (temp4 - icase * acap / (2.0f * vss * f) - ical13_ecav * acap / (2.0f * vss * f));
   //C
   //C               ICaLcav
   //C
@@ -1490,12 +1748,13 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   //C
   //C  y[23]  Na intracellular concentration
   //C
-  ydot[23] = -1.0f * (ina + inab + 3.0f * (inaca + inak)) * acap / (vmyo * f);
+
+  ydot[23] = params[20] * (-1.0f) * (ina + ina_11 + inab + ifna + 3.0f * (inaca + inak)) * acap / (vmyo * f);
   //C
   //C  y[24]  K  intracellular concentration
   //C
-  ydot[24] = -1.0f * (ikto + ik1 + iks + ikur + ikr + icak - 2.0f *
-    inak - istim) * acap / (vmyo * f);
+  ydot[24] = params[21] * (-1.0f) * (ikto + ik1 + iks + ikur + ikr + icak + ifk - 2.0f *
+    inak - ALGEBRAIC[5]) * acap / (vmyo * f);
   //C
   //C  y[25],y[26]  ato and ito gating variables for Ikto
   //C
@@ -1573,6 +1832,7 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   double taui4 = 5334.f - 4912.f / (1.0f + exp((45.2f + y[1]) / 5.7f));
   ydot[184] = (ass - y[184]) / taua2;
   ydot[185] = (iss2 - y[185]) / taui4;
+
   //C
   //C y[30]-y[34] HERG channel state variables
   //C
@@ -1700,7 +1960,7 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   //C
   ydot[59] = khydgs * y[57] - kreasgs * y[58] * y[59];
   //C
-  //C   y[60] cAMP from AC56 in ceveolae
+  //C   y[60] cAMP from AC56 in caveolae
   //C
   ydot[60] = kcavac56 * ac56cav * atp / (kmatp + atp);
   //C
@@ -2037,7 +2297,52 @@ void fun(double time, double* y, double* ydot, double* params, double* ALGEBRAIC
   ydot[183] = kicakpka * y[83] * (1 - y[183]) / (kicakmpka + (1 - y[
     183])) - kicakpp * ppcav * y[183] / (kicakmpp + y[183]);
   //C
+  //Currents output
+  ALGEBRAIC[6] = ina;
+  ALGEBRAIC[7] = inaca;
+  ALGEBRAIC[8] = inak;
+  ALGEBRAIC[9] = ipca;
+  ALGEBRAIC[10] = icab;
+  ALGEBRAIC[11] = inab;
+  ALGEBRAIC[12] = iks;
+  ALGEBRAIC[13] = ikto;
+  ALGEBRAIC[14] = ikr;
+  ALGEBRAIC[15] = iclca;
+  ALGEBRAIC[16] = icas;
+  ALGEBRAIC[17] = icat;
+  ALGEBRAIC[18] = jrelt;
+  ALGEBRAIC[19] = jleak;
+  ALGEBRAIC[20] = jup;
+  ALGEBRAIC[21] = icak;
+  ALGEBRAIC[22] = ik1;
+  ALGEBRAIC[23] = ifna;
+  ALGEBRAIC[24] = ifk;
+  ALGEBRAIC[25] = ical13;
+  ALGEBRAIC[26] = ina_11;
+  ALGEBRAIC[27] = icasc;
+  ALGEBRAIC[28] = icase;
+  ALGEBRAIC[29] = ical13_cav;
+  ALGEBRAIC[30] = ical13_ecav;
 
 
+  //ydot[2] = bi * (jleak + jxfert - jup - jtrpn - temp1);
+  //double temp1 = 0.5f * (icab - 2.0f * inaca + ipca + icasc + icat) * acap / (vmyo * f);
+  // ALGEBRAIC[26] = temp1;
+  // ALGEBRAIC[27] = temp2;
+  // ALGEBRAIC[28] = temp3;
+  // ALGEBRAIC[29] = temp4;
+  // ALGEBRAIC[30] = bi;
+  // ALGEBRAIC[31] = icasc;
+  // ALGEBRAIC[32] = jleak;
+  // ALGEBRAIC[33] = jxfert;
+  // ALGEBRAIC[34] = jup;
+  // ALGEBRAIC[35] = jtrpn;
+  //
+  // // double temp3 = (kmcmdn + y[7]) * (kmcmdn + y[7]);
+  // // bss = 1.0f / (1.0f + ccmdntot * kmcmdn / temp3);
+  // // double temp4 = jrelt * vjsr / vss - jxfert * vmyo / vss;
+  // // ydot[7] = bss * (temp4 - icase * acap / (2.0f * vss * f));
+  // ALGEBRAIC[36] = bss;
+  // ALGEBRAIC[37] = icase;
+  // ALGEBRAIC[38] = jrelt;
 }
-
